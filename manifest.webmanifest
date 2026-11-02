@@ -1,0 +1,9 @@
+{
+  "name": "GreenForce Manager",
+  "short_name": "GreenForce",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f2f5f1",
+  "theme_color": "#123b2b",
+  "lang": "bg"
+}
