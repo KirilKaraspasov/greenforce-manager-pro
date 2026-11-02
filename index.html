@@ -49,4 +49,11 @@ function backup(){let a=document.createElement('a'),u=URL.createObjectURL(new Bl
 function restore(e){let r=new FileReader();r.onload=()=>{try{let o=JSON.parse(r.result);Object.keys(db).forEach(k=>{if(Array.isArray(o.db[k])){db[k]=o.db[k];localStorage.setItem('gf_'+k,JSON.stringify(db[k]))}});if(o.alloc){alloc=o.alloc;localStorage.setItem('gf_alloc',JSON.stringify(alloc))}render();alert('Архивът е възстановен.')}catch{alert('Невалиден архив.')}};r.readAsText(e.target.files[0])}
 function report(){let inc=db.visits.reduce((s,v)=>s+(+v.price||0),0),ex=db.expenses.reduce((s,v)=>s+(+v.amount||0),0);$('print').innerHTML=`<h2>GreenForce — отчет</h2><p>Клиенти: ${db.clients.length} | Посещения: ${db.visits.length}</p><p>Приходи: ${eur(inc)} | Разходи: ${eur(ex)} | Резултат: ${eur(inc-ex)}</p><table><tr><th>Дата</th><th>Клиент</th><th>Услуга</th><th>Сума</th></tr>${db.visits.map(v=>`<tr><td>${esc(v.date)}</td><td>${esc(client(v.clientId))}</td><td>${esc(v.service)}</td><td>${eur(v.price)}</td></tr>`).join('')}</table>`;$('print').style.display='block';window.print();$('print').style.display='none'}
 nav();$('vm').value=new Date().toISOString().slice(0,7);render();
-</script></body></html>
+</script><script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.error('Service worker:', err));
+  });
+}
+</script>
+</body></html>
