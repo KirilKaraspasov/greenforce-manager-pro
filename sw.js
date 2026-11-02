@@ -1,1 +1,25 @@
-const C='gf-manager-v2';self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(['./','./index.html','./manifest.webmanifest']))));self.addEventListener('fetch',e=>{if(e.request.method==='GET')e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match('./index.html'))))});
+'use strict';
+const PREFIX='greenforce-pro-'+self.registration.scope+'-';
+const CACHE=PREFIX+'v1.0.1';
+const FILES=['./','./index.html','./style.css','./app.js','./pdf.js','./manifest.webmanifest','./assets/icon-192.png','./assets/icon-512.png','./assets/garden.jpg'];
+// Detect the previous application only within this exact repository scope.
+async function legacyPresent(){
+ if(!await caches.has('gf-manager-v2'))return false;
+ const old=await caches.open('gf-manager-v2');
+ const response=await old.match(new URL('./index.html',self.registration.scope).href);
+ return !!response&&(await response.text()).includes('<title>GreenForce Manager</title>');
+}
+self.addEventListener('install',e=>e.waitUntil((async()=>{
+ const cache=await caches.open(CACHE);await cache.addAll(FILES);
+ // A legacy page has no update controls; activate its replacement automatically.
+ if(await legacyPresent())await self.skipWaiting();
+})()));
+self.addEventListener('activate',e=>e.waitUntil((async()=>{
+ const migrate=await legacyPresent();
+ await Promise.all((await caches.keys()).filter(k=>k.startsWith(PREFIX)&&k!==CACHE).map(k=>caches.delete(k)));
+ await self.clients.claim();
+ if(migrate){const windows=await self.clients.matchAll({type:'window'});windows.filter(c=>c.url.startsWith(self.registration.scope)).forEach(c=>{c.navigate(c.url).catch(()=>null)});}
+ // Legacy caches and local data are left intact; other projects may use them.
+})()));
+self.addEventListener('message',e=>{if(e.data==='SKIP_WAITING')self.skipWaiting()});
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET'||new URL(e.request.url).origin!==self.location.origin)return;e.respondWith((async()=>{const cache=await caches.open(CACHE);const hit=await cache.match(e.request,{ignoreSearch:true});if(hit)return hit;try{return await fetch(e.request)}catch(err){if(e.request.mode==='navigate')return cache.match('./index.html');return Response.error()}})())});
