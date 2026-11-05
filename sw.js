@@ -1,7 +1,7 @@
 'use strict';
 const PREFIX='greenforce-pro-'+self.registration.scope+'-';
-const CACHE=PREFIX+'v1.0.1';
-const FILES=['./','./index.html','./style.css','./app.js','./pdf.js','./manifest.webmanifest','./assets/icon-192.png','./assets/icon-512.png','./assets/garden.jpg'];
+const CACHE=PREFIX+'v1.1.0';
+const FILES=['./','./index.html','./style.css','./app.js','./pdf.js','./media.js','./document-templates.js','./manifest.webmanifest','./assets/icon-192.png','./assets/icon-512.png','./assets/garden.jpg','./assets/document-cover.jpeg'];
 // Detect the previous application only within this exact repository scope.
 async function legacyPresent(){
  if(!await caches.has('gf-manager-v2'))return false;
