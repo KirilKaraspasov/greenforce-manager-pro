@@ -15,3 +15,8 @@ for(const template of ['Свободен документ','Оферта GreenFo
 run('const archive=JSON.stringify(db);const restored=validate(JSON.parse(archive))');assert.equal(run('docTotal(restored.documents[0])'),387);assert.equal(run('restored.documents[0].quoteConfig.package.price'),1.85);assert.equal(run('restored.documents[0].quoteConfig.rows.find(r=>r.id===\'seed\').qty'),6);
 console.log('PASS missing/zero manual prices blocked, bad quantities/tampering/duplicate IDs rejected, archive round trip, and no sources in any customer text/PDF options');
 console.log('ALL QUOTE DOMAIN CHECKS PASSED');
+
+run("const architectDoc={...base,includePriceProtocol:true,extraServices:GFTemplates.rates,pricingMode:'lines',priceBasis:'month'}");
+for(const template of ['Свободен документ','Оферта GreenForce','Сезонен договор GreenForce','Годишен договор GreenForce']){for(const basis of ['month','contract']){run(`architectDoc.template=${JSON.stringify(template)};architectDoc.priceBasis=${JSON.stringify(basis)}`);assert(run('documentText(architectDoc)').includes(run('GFTemplates.architectNote')));assert.equal(run('docTotal(architectDoc)'),270);}}
+run('architectDoc.includePriceProtocol=false');assert(!run('documentText(architectDoc)').includes(run('GFTemplates.architectNote')));
+console.log('PASS architect attribution in optional extras for every template and price basis, unchanged totals, omitted when disabled');
