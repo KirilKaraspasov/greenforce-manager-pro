@@ -1,6 +1,6 @@
 'use strict';
 const PREFIX='greenforce-pro-'+self.registration.scope+'-';
-const CACHE=PREFIX+'v1.11.1';
+const CACHE=PREFIX+'v1.11.2';
 const FILES=['./','./index.html','./style.css','./app.js','./quotes.js','./portfolio.js','./irrigation-planner.js','./features.js','./knowledge.js','./manager.js','./drive-backup.js','./inspections.js','./GOOGLE_DRIVE_BG.md','./flora.js','./pdf.js','./recommendations.js','./pdf-lib-1.17.1.min.js','./media.js','./document-templates.js','./manifest.webmanifest','./assets/greenforce-icon-192-v112.png','./assets/greenforce-icon-512-v112.png','./assets/greenforce-maskable-512-v112.png','./assets/garden.jpg','./assets/document-cover.jpeg'];
 // Detect the previous application only within this exact repository scope.
 async function legacyPresent(){
