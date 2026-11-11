@@ -31,3 +31,5 @@
 #irrigation-build .zone-card{padding:12px;margin:12px 0}#irrigation-build .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#irrigation-build .field{min-width:0}#irrigation-build input{max-width:100%}.zone-card p{white-space:pre-line;overflow-wrap:anywhere}#record-form[data-table="irrigation"] .form-grid,#record-form[data-table="irrigationLogs"] .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#record-form[data-table="irrigation"] .field,#record-form[data-table="irrigationLogs"] .field{min-width:0}@media(max-width:450px){#record-form[data-table="irrigation"]>.form-grid,#record-form[data-table="irrigationLogs"]>.form-grid{grid-template-columns:minmax(0,1fr)}}
 
 .visit-counter small{display:block;margin-top:7px;line-height:1.5;font-weight:400}.visit-counter>span{display:block}.visit-counter strong{display:block;margin-top:8px}
+
+#drive-backup-panel{overflow-wrap:anywhere}#drive-auto{width:22px;height:22px;margin:0 8px 0 0;vertical-align:middle;accent-color:var(--green)}#modal:has(#drive-client-id) code{overflow-wrap:anywhere}#drive-client-id{max-width:100%;min-width:0}
