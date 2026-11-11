@@ -1,6 +1,6 @@
 'use strict';
 const PREFIX='greenforce-pro-'+self.registration.scope+'-';
-const CACHE=PREFIX+'v1.12.0';
+const CACHE=PREFIX+'v1.12.0-r2';
 const FILES=['./','./index.html','./style.css','./app.js','./quotes.js','./portfolio.js','./irrigation-planner.js','./features.js','./knowledge.js','./manager.js','./drive-backup.js','./inspections.js','./plant-photos.js','./encyclopedia.js','./GOOGLE_DRIVE_BG.md','./flora.js','./pdf.js','./recommendations.js','./pdf-lib-1.17.1.min.js','./media.js','./document-templates.js','./manifest.webmanifest','./assets/greenforce-icon-192-v112.png','./assets/greenforce-icon-512-v112.png','./assets/greenforce-maskable-512-v112.png','./assets/garden.jpg','./assets/document-cover.jpeg',"./assets/plants/chrysanthemum.jpg","./assets/plants/delosperma.jpg","./assets/plants/thuja.jpg","./assets/plants/leyland.jpg","./assets/plants/hornbeam.jpg","./assets/plants/yew.jpg","./assets/plants/tagetes.jpg","./assets/plants/petunia.jpg","./assets/plants/pelargonium.jpg","./assets/plants/zinnia.jpg","./assets/plants/scarlet-sage.jpg","./assets/plants/lavender.jpg","./assets/plants/woodland-sage.jpg","./assets/plants/daylily.jpg","./assets/plants/daisy.jpg","./assets/plants/echinacea.jpg","./assets/plants/begonia.jpg","./assets/plants/impatiens.jpg","./assets/plants/pansy.jpg","./assets/plants/primrose.jpg","./assets/plants/astilbe.jpg","./assets/plants/heuchera.jpg","./assets/plants/alchemilla.jpg","./assets/plants/aquilegia.jpg","./assets/plants/digitalis.jpg","./assets/plants/bergenia.jpg","./assets/plants/hosta.jpg","./assets/plants/brunnera.jpg","./assets/plants/pulmonaria.jpg","./assets/plants/hellebore.jpg","./assets/plants/vinca.jpg","./assets/plants/lamium.jpg","./assets/plants/lilyvalley.jpg","./assets/plants/geranium.jpg","./assets/plants/bleeding-heart.jpg","./assets/plants/pachysandra.jpg","./assets/plants/norway-maple.jpg","./assets/plants/birch.jpg","./assets/plants/linden.jpg","./assets/plants/spruce.jpg","./assets/plants/juniper.jpg","./assets/plants/spiraea.jpg","./assets/plants/hydrangea.jpg","./assets/plants/hibiscus.jpg"];
 // Detect the previous application only within this exact repository scope.
 async function legacyPresent(){
@@ -10,7 +10,7 @@ async function legacyPresent(){
  return !!response&&(await response.text()).includes('<title>GreenForce Manager</title>');
 }
 self.addEventListener('install',e=>e.waitUntil((async()=>{
- const cache=await caches.open(CACHE);await cache.addAll(FILES);
+ const cache=await caches.open(CACHE);await cache.addAll(FILES.map(url=>new Request(url,{cache:'reload'})));
  // A legacy page has no update controls; activate its replacement automatically.
  if(await legacyPresent())await self.skipWaiting();
 })()));
