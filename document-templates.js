@@ -20,7 +20,7 @@ const GFTemplates=(()=>{
  text(`${r.title}\nДокумент № ${r.number} · Дата ${date(r.date)}\n${r.type==='Оферта'?'Валидност на предложението: '+date(r.validUntil):'Проект за обсъждане и попълване преди подписване.'}`);
  if(r.packageName){heading('Абонаментен пакет');text(r.packageName)}
  heading('Възложител и обект');table(['Данни','Описание'],[['Клиент',c.name||'________________'],['Представляван от',c.contact||'________________'],['ЕИК / БУЛСТАТ',c.registration||'________________'],['Основание за представителство',c.authority||'________________'],['Адрес на обекта',c.address||'________________'],['Поддържана площ',c.area?c.area+' m²':'Уточнява се при оглед'],['Контакт',[c.phone,c.email].filter(Boolean).join(' · ')||'________________']],[.32,.68]);
- heading('Изпълнител');text(r.contractorMode?documentContractorText(r):`${s.legalName} / ${s.company}\nЕИК: ${s.registration}\nПредставлявано от: ${s.owner}\nАдрес: ${s.address}\nТелефон: ${s.phone} · Имейл: ${s.email}\nIBAN: ${s.iban}`);
+ heading('Изпълнител');text(documentContractorText(r));
  heading('Предложение и период');table(['Условие','Предложение'],[['Месечна абонаментна цена',money(price)],['Посещения за пълен месец',String(count)],['Срок на поддръжката',start+' - '+end],['Плащане','След последното договорено посещение за месеца, до '+days+' дни от платежния документ'],['Дейности и материали','Съгласно изрично описания обхват и одобрените допълнителни услуги']],[.38,.62]);
  heading('Позиции и цена');table(['Позиция','Кол.','Ед. цена','Стойност'],docLines(r).map(l=>[l.name,String(l.qty),money(l.price),money(l.qty*l.price)]),[.46,.13,.2,.21]);text(`Междинна сума: ${money(documentSubtotal(r))}\nОтстъпка: ${r.discount||0}%\nКрайна месечна цена: ${money(price)}`);
  if(r.type==='Оферта'){
