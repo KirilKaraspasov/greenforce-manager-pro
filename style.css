@@ -27,3 +27,7 @@
 .portfolio-choice{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border,#d8e2dc)}.portfolio-choice span{min-width:0;overflow-wrap:anywhere}.portfolio-choice small{display:block}.portfolio-choice button{flex-shrink:0}.portfolio-list{margin-top:18px}#portfolio-picker select{min-width:0;max-width:100%}
 
 #portfolio-picker,#record-form .photo-section{min-width:0;overflow-wrap:anywhere}#record-form .check{min-width:0}#record-form .check input{flex-shrink:0}
+
+#irrigation-build .zone-card{padding:12px;margin:12px 0}#irrigation-build .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#irrigation-build .field{min-width:0}#irrigation-build input{max-width:100%}.zone-card p{white-space:pre-line;overflow-wrap:anywhere}#record-form[data-table="irrigation"] .form-grid,#record-form[data-table="irrigationLogs"] .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#record-form[data-table="irrigation"] .field,#record-form[data-table="irrigationLogs"] .field{min-width:0}@media(max-width:450px){#record-form[data-table="irrigation"]>.form-grid,#record-form[data-table="irrigationLogs"]>.form-grid{grid-template-columns:minmax(0,1fr)}}
+
+.visit-counter small{display:block;margin-top:7px;line-height:1.5;font-weight:400}.visit-counter>span{display:block}.visit-counter strong{display:block;margin-top:8px}
