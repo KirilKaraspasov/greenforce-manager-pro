@@ -1,0 +1,9 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
+function canvas(){const ops=[],c={ops,measureText:t=>({width:String(t).length*10}),fillRect(){},fillText(){},drawImage(...args){ops.push(args)},strokeRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){}};return {getContext:()=>c,toDataURL:()=> 'data:image/jpeg;base64,/9j/2Q=='}}
+const context=vm.createContext({document:{createElement:canvas},Image:class{set src(v){[this.width,this.height]=v.split('x').map(Number)}async decode(){}},Blob,TextEncoder,atob});vm.runInContext(fs.readFileSync(path.join(__dirname,'../pdf.js'),'utf8'),context);
+(async()=>{for(const theme of ['light','dark']){
+context.theme=theme;const pages=await vm.runInContext("renderDocumentPages('QA','',{theme,photos:[{title:'Преди',images:['1600x900','900x1600','800x800','2000x600','600x2000','1000x1000','1200x800']},{title:'След',images:['800x1600']}]})",context);
+assert.equal(pages.length,4);let count=0;for(const page of pages)for(const a of page.getContext().ops){count++;assert.equal(a.length,9);const [img,sx,sy,sw,sh,x,y,w,h]=a;assert.equal(sw,sh);assert.equal(w,h);assert.equal(w,511.5);assert.equal(sx,(img.width-sw)/2);assert.equal(sy,(img.height-sh)/2);assert.equal(sw,Math.min(img.width,img.height));assert(x>=96&&x+w<=1144);assert(y>=230&&y+h+27<1600);assert.equal(sw/w,sh/h)}assert.equal(count,8);
+const odd=pages[2].getContext().ops[2];assert.equal(odd[5]+odd[7]/2,620);assert.equal(odd[6],786.5);const single=pages[3].getContext().ops[0];assert.equal(single[5]+single[7]/2,620);assert.equal(single[6],230);
+}console.log('PASS uniform 511.5px squares, centered cover crops for portrait/landscape/square, no distortion or gaps, centered odd rows, four per page, group order and page bounds in both themes');})().catch(e=>{console.error(e);process.exitCode=1});
