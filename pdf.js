@@ -29,7 +29,7 @@ async function renderDocumentPages(title,text,options={}){
     const row=Math.floor(slot/cols),col=slot%cols,rowCount=Math.min(cols,count-row*cols),rowWidth=rowCount*size+(rowCount-1)*gap,x=(W-rowWidth)/2+col*(size+gap),top=230+row*(size+45),img=await loadImage(group.images[start+slot]);
     const crop=Math.min(img.width,img.height),sx=(img.width-crop)/2,sy=(img.height-crop)/2;
     ctx.drawImage(img,sx,sy,crop,crop,x,top,size,size);
-    ctx.fillStyle=dark?'#c3d0b8':'#52634c';ctx.font='20px sans-serif';ctx.fillText('Снимка '+(start+slot+1),x,top+size+27);
+    ctx.fillStyle=dark?'#c3d0b8':'#52634c';ctx.font='20px sans-serif';const caption=group.captions?.[start+slot]||'Снимка '+(start+slot+1),captionLines=lines(caption,'20px sans-serif',size);ctx.fillText(captionLines[0]+(captionLines.length>1?'…':''),x,top+size+27);
    }
    flush();
   }
