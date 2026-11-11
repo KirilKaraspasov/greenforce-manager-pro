@@ -18,7 +18,23 @@ async function renderDocumentPages(title,text,options={}){
  newPage();
  if(options.blocks){for(const b of options.blocks){if(b.kind==='break'){flush();newPage()}else if(b.kind==='heading')heading(b.text);else if(b.kind==='table')table(b);else if(b.kind==='signature'){room(200);y+=25;paragraph(b.text,'22px sans-serif')}else paragraph(b.text)}}else{paragraph(title,'bold 35px sans-serif',dark?'#fff':brand,44);paragraph(text)}
  flush();
- for(const group of options.photos||[]){newPage();heading(group.title);const cols=2,gap=25,cellW=(W-2*M-gap)/2,cellH=410;for(let i=0;i<group.images.length;i++){if(i&&i%6===0){flush();newPage();heading(group.title+' - продължение')}const slot=i%6,col=slot%2,row=Math.floor(slot/2),x=M+col*(cellW+gap),top=230+row*(cellH+45),img=await loadImage(group.images[i]);ctx.fillStyle=dark?'#17251b':'#eff3eb';ctx.fillRect(x,top,cellW,cellH);const scale=Math.min((cellW-18)/img.width,(cellH-18)/img.height);ctx.drawImage(img,x+(cellW-img.width*scale)/2,top+(cellH-img.height*scale)/2,img.width*scale,img.height*scale);ctx.fillStyle=dark?'#c3d0b8':'#52634c';ctx.font='20px sans-serif';ctx.fillText('Снимка '+(i+1),x,top+cellH+27)}flush()}
+ // Uniform square photos: centered cover crop, four per page, centered final single.
+ for(const group of options.photos||[]){
+  if(!group.images.length)continue;
+  const cols=2,perPage=4,gap=25,size=(W-2*M-gap)/cols;
+  for(let start=0;start<group.images.length;start+=perPage){
+   newPage();heading(group.title+(start?' - продължение':''));
+   const count=Math.min(perPage,group.images.length-start);
+   for(let slot=0;slot<count;slot++){
+    const row=Math.floor(slot/cols),col=slot%cols,rowCount=Math.min(cols,count-row*cols),rowWidth=rowCount*size+(rowCount-1)*gap,x=(W-rowWidth)/2+col*(size+gap),top=230+row*(size+45),img=await loadImage(group.images[start+slot]);
+    const crop=Math.min(img.width,img.height),sx=(img.width-crop)/2,sy=(img.height-crop)/2;
+    ctx.drawImage(img,sx,sy,crop,crop,x,top,size,size);
+    ctx.fillStyle=dark?'#c3d0b8':'#52634c';ctx.font='20px sans-serif';ctx.fillText('Снимка '+(start+slot+1),x,top+size+27);
+   }
+   flush();
+  }
+ }
+
  pages.forEach((p,i)=>{const c=p.canvas.getContext('2d');if(!p.cover){c.strokeStyle=lime;c.lineWidth=1;c.beginPath();c.moveTo(M,H-95);c.lineTo(W-M,H-95);c.stroke();c.fillStyle=muted;c.font='17px sans-serif';c.fillText(contact||'GreenForce Озеленяване',M,H-62);c.textAlign='right';c.fillText(`${i+1} / ${pages.length}`,W-M,H-62)}});
  return pages.map(p=>p.canvas);
 }
