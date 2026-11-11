@@ -18,3 +18,8 @@
 .quote-builder.full{grid-column:1/-1}#record-form[data-table="documents"] .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#record-form[data-table="documents"] .field{min-width:0}#record-form[data-table="documents"] .field input,#record-form[data-table="documents"] .field select,#record-form[data-table="documents"] .field textarea{min-width:0}@media(max-width:450px){#record-form[data-table="documents"] .form-grid{grid-template-columns:minmax(0,1fr)}}
 
 .recommendation-choice{align-items:flex-start;margin:14px 0}.recommendation-choice small{display:block;font-weight:400}.recommendation-file{padding:12px 0;border-bottom:1px solid var(--line,#d3dfd6);overflow-wrap:anywhere}.recommendation-file .actions{margin-top:8px}
+
+.bonus-row{padding:12px 0;border-bottom:1px solid #d8e2d9}.bonus-row .field{margin:8px 0}.bonus-row .between{flex-wrap:wrap}
+#bonus-editor [hidden]{display:none!important}
+
+.expense-entry{padding:14px 0;border-bottom:1px solid #d5e2d8}.expense-entry p{overflow-wrap:anywhere}.expense-entry .between{flex-wrap:wrap}.client-history{width:100%;table-layout:fixed;font-size:12px}.client-history th:first-child{width:40%}.client-history th:not(:first-child){width:20%}.client-history td,.client-history th{padding:8px 4px;overflow-wrap:anywhere;white-space:normal!important}.client-history .iconbtn{display:block;width:100%;font:inherit;white-space:normal;overflow-wrap:anywhere;padding:2px;text-align:left}
