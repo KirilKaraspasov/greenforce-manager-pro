@@ -30,3 +30,6 @@ A spring bulb border alongside a residential walkway in Sofia Bulgaria, tulips a
 
 A low sunny dry rock garden edging by a gravel path in Sofia Bulgaria, hardy low Delosperma cooperi with magenta flowers, Sempervivum rosettes, low Dianthus pink flowers, thyme mats and blue Festuca glauca tufts; excellent drainage, realistic small species with rocks and grit.
 
+
+
+1.15.4: silver-lime.png и green-purple.png са собствени генерирани концептуални изображения от разговора на 12.11.2026, включени с разрешението за добавяне на двете композиции. Първата показва летен развит бордюр с Polestar, листна Trevi Fountain и Gold Chang; втората — къснолетен развит Green Carpet и Plum Dazzled. Изображенията не са снимки на извършена работа, доказателство за наличност, точен брой растения или точен вид на всеки доставян сорт. При изпълнение водещ е етикетът и реалният посадъчен материал.
