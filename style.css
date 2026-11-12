@@ -51,3 +51,9 @@ html[data-theme="dark"] .tile{background:linear-gradient(145deg,#2d4434,#21342b)
 @media(max-width:420px){#garden-calc .form-grid{grid-template-columns:minmax(0,1fr)}.garden-tool{padding:14px 10px}.enc-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 html[data-theme="dark"] .enc-facts{background:#233a2b}html[data-theme="dark"] .month-picker{background:#294332;color:#e1ece5}
+
+/* Restored light appearance and compact seasonal plant cards. */
+:root{--bg:#f4f7f5}body{background:#fff}.enc-region-panel{background:#fff}.enc-region-panel .check{font-size:12px;margin:10px 0}.enc-season,.enc-plant-months,.enc-climate{display:block!important;font-size:11px!important;line-height:1.35;margin:6px 0 0}.enc-season{padding:5px 7px;border-radius:7px;background:#eef2ed;color:#37533e}.enc-season.enc-now{background:#d9efc9;color:#255a1c;font-weight:750}.enc-climate{color:#62756b}.enc-plant-months{color:#37533e}.enc-filters label{min-width:0}.enc-filters select{width:100%;min-width:0}.enc-open strong{overflow-wrap:anywhere}.enc-detail>p{overflow-wrap:anywhere}
+@media(max-width:420px){.enc-region-panel .enc-filters{grid-template-columns:minmax(0,1fr)}.enc-open strong{font-size:14px}.enc-open small{font-size:11px}.enc-card .enc-favorite{font-size:11px}}
+
+.enc-region-top{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:10px;margin:12px 0}.enc-filter-panel{padding:12px 14px}.enc-filter-panel summary{font-weight:700;cursor:pointer}.enc-filter-panel[open] summary{margin-bottom:14px}.enc-filter-panel>.field{margin:10px 0}.enc-filter-panel .check{font-size:12px;margin:10px 0}.enc-filter-panel .muted{font-size:12px}.enc-intro{margin-bottom:12px}.enc-region-top select{font-size:12px;padding:9px 6px}.enc-region-top label{font-size:12px}
