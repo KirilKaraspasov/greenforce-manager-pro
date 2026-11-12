@@ -32,3 +32,8 @@ run('state.supplierSearch="";state.supplierStatus="photo"');assert.equal(run('PL
 assert.match(run('supplierCard(PLANT_SUPPLIERS.find(r=>r.id==="sterev-golden-gem"))'),/Историческа цена/);
 assert.match(run('supplierCard(PLANT_SUPPLIERS.find(r=>r.id==="sterev-bellis"))'),/tel:0883370200/);
 console.log('PASS cultivar counts, 6 historic records, 2 screenshot records, combined filters, multiple suppliers per plant and distinct species kept separate');
+
+assert.equal(run('supplierRows(comboById("silver-lime").plants.map(p=>p[0])).length'),3);
+assert.equal(run('supplierRows(comboById("green-purple").plants.map(p=>p[0])).length'),2);
+assert.equal(run('supplierRows(comboById("green-purple").plants.map(p=>p[0])).every(r=>r.shop.startsWith("Иван Стерев"))'),true);
+console.log('PASS both new combinations resolve to exact supplier cultivars only');
