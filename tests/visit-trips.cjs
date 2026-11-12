@@ -1,0 +1,42 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path'),root=path.resolve(__dirname,'..');
+const ctx=vm.createContext({URL,Date,location:{href:'https://example.test/app/'},localStorage:{getItem:()=>null,setItem(){}},window:{},document:{addEventListener(){}},structuredClone,crypto:require('node:crypto').webcrypto,console,setTimeout,clearTimeout});
+for(const n of ['recommendations.js','media.js','document-templates.js','quotes.js','features.js','knowledge.js','flora.js','manager.js','portfolio.js','irrigation-planner.js','inspections.js'])vm.runInContext(fs.readFileSync(path.join(root,n),'utf8'),ctx,{filename:n});vm.runInContext(fs.readFileSync(path.join(root,'app.js'),'utf8').split('let installPrompt=null')[0],ctx);const run=s=>vm.runInContext(s,ctx);
+run(`db=blank();db.clients=[{id:'a',name:'Обект А'},{id:'b',name:'Обект Б'},{id:'c',name:'Друг клиент'}];
+ const v={id:'v1',clientId:'a',date:'2026-11-12',time:'09:00',service:'Косене',amount:80,discount:0,status:'Изпълнено'};
+ const vb={...v,id:'v2',clientId:'b'},vnext={...v,id:'v3',date:'2026-11-15'};db.visits=[v,vb,vnext];
+ const trip={id:'t',name:'Общ маршрут',date:'2026-11-12',km:100,l100:10,fuelPrice:1.5,otherCost:5,durationHours:2,shares:[{clientId:'a',weight:60},{clientId:'b',weight:40}],notes:'ВЪТРЕШНА БЕЛЕЖКА'};db.trips=[trip];validate(db);`);
+assert.equal(run('tripCost(trip)'),20);
+assert.equal(run('visitTripChoices("a").length'),1);assert.equal(run('visitTripChoices("c").length'),0);
+assert.match(run('visitTripFields(v)'),/Повтори маршрута/);
+assert.equal(run('db.expenses.length'),0);
+run('applyVisitTrip({tripId:"t",mode:"link"},v);validate(db)');
+assert.equal(run('db.expenses.length'),2);assert.equal(run('sum(db.expenses,e=>e.amount)'),20);
+assert.equal(run('sum(visitExpenses("v1"),e=>e.amount)'),12);assert.equal(run('visitExpenses("v2").length'),0);
+run('applyVisitTrip({tripId:"t",mode:"link"},v);applyVisitTrip({tripId:"t",mode:"link"},vb);validate(db)');
+assert.equal(run('db.expenses.length'),2);assert.equal(run('sum(visitExpenses("v2"),e=>e.amount)'),8);
+assert.throws(()=>run('applyVisitTrip({tripId:"t",mode:"link"},vnext)'),/друго посещение/);
+assert.throws(()=>run('applyVisitTrip({tripId:"t",mode:"link"},{...v,clientId:"c"})'),/дял/);
+run('const partA=visitExpenses("v1")[0];partA.amount=13.75;applyVisitTrip({tripId:"t",mode:"link"},v)');
+assert.equal(run('visitExpenses("v1")[0].amount'),13.75);assert.equal(run('net(v)'),80);
+assert.equal(run('visitExpenseReportText(v)'), '');
+assert.match(run('visitExpenseReportText({...v,showExpensesInClientReport:true})'),/Общ маршрут/);
+assert.doesNotMatch(run('visitExpenseReportText({...v,showExpensesInClientReport:true})'),/ВЪТРЕШНА/);
+run('const repeatedExpense=applyVisitTrip({tripId:"t",mode:"repeat"},vnext);validate(db);const repeated=db.trips.find(t=>t.id===repeatedExpense.tripId)');
+assert.equal(run('db.trips.length'),2);assert.equal(run('db.expenses.length'),4);assert.equal(run('repeated.date'),'2026-11-15');
+assert.equal(run('repeatedExpense.amount'),12);assert.equal(run('repeated.shares.length'),2);assert.equal(run('trip.expenseIds.some(id=>repeated.expenseIds.includes(id))'),false);
+assert.throws(()=>run('applyVisitTrip({tripId:"t",mode:"repeat"},vnext)'),/вече е повторен/);
+run('const beforeCount=db.expenses.length,beforeMoney=sum(db.expenses,e=>e.amount);unlinkVisitTrip(repeatedExpense.id,"v3");validate(db)');
+assert.equal(run('db.expenses.length===beforeCount&&sum(db.expenses,e=>e.amount)===beforeMoney'),true);
+assert.equal(run('visitExpenses("v3").length'),0);
+run('applyVisitTrip({tripId:repeated.id,mode:"link"},vnext);validate(db)');assert.equal(run('db.expenses.length'),4);
+run('const archive=validate(JSON.parse(JSON.stringify(db)))');assert.equal(run('archive.expenses.find(e=>e.id===repeatedExpense.id).visitId'),'v3');
+// Missing a previously posted share must never silently recreate all shares.
+run('db.expenses=db.expenses.filter(e=>e.id!==partA.id)');
+assert.throws(()=>run('applyVisitTrip({tripId:"t",mode:"link"},v)'),/положителен разход/);assert.equal(run('db.expenses.length'),3);
+// Changes roll back the whole new visit/journey if storage fails.
+run('localStorage.setItem=()=>{throw Error("QuotaExceededError")};toast=()=>{};const original=JSON.stringify(db);const rolledBack=change(()=>{const next={...v,id:"fail",date:"2026-11-20"};db.visits.push(next);applyVisitTrip({tripId:"t",mode:"repeat"},next)})');
+assert.equal(run('rolledBack'),false);assert.equal(run('JSON.stringify(db)===original'),true);
+// No trip fields are serialized onto a visit; selection is applied in the same save transaction.
+const app=fs.readFileSync(path.join(root,'app.js'),'utf8');assert.match(app,/table==='visits'\?visitTripFields\(r\)/);assert.match(app,/if\(tripSelection\)applyVisitTrip\(tripSelection,r\)/);
+console.log('PASS saved-trip selection, shared-client penny amounts, one-time posting, repeat per visit/date, duplicate and cross-client guards, corrected posted amounts, partial deletion safety, detach without loss, archive roundtrip, customer privacy and storage rollback');
