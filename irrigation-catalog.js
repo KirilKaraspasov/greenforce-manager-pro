@@ -3123,13 +3123,94 @@ const IRR_SUPPLIER_CATALOG=[
 ];
 IRR_SUPPLIER_CATALOG.push(...[{"id": "nap-mp3000", "name": "Дюзи Hunter MP Rotator MP 3000", "group": "Разпръсквачи", "unit": "бр.", "price": 10.8, "url": "https://napoqvane.com/Hunter_MP_3000", "checked": "2026-11-13"}, {"id": "nap-pros04", "name": "PROS-04 Разпръсквач Hunter PROS-04 10 см. без дюза", "group": "Разпръсквачи", "unit": "бр.", "price": 3.12, "url": "https://napoqvane.com/hunter_pros-04", "checked": "2026-11-13", "conflict": true}]);
 
-function irrigationCatalogFields(){return `<details class="zone-card" open><summary>Каталог napoqvane.com · ${IRR_SUPPLIER_CATALOG.length} ценови позиции</summary><p>Публични ориентири в евро с ДДС, прегледани на 13.11.2026 г. Част от страниците са кеширани и цените може да са променени. Това не е партньорският ти ценоразпис. Потвърди наличност, вариант, ценова единица и доставка.</p><label class="field">Търси артикул<input id="irr-catalog-search" placeholder="MP 1000, Hunter, клапан…"></label><label class="field">Група артикули<select id="irr-catalog-group"><option value="">Всички</option>${[...new Set(IRR_SUPPLIER_CATALOG.map(p=>p.group))].map(g=>`<option>${esc(g)}</option>`).join('')}</select></label><label class="field">Артикул от партньора<select id="irr-catalog-pick">${irrigationCatalogOptions('','')}</select></label><div id="irr-catalog-info"></div><label class="field">Точен размер / вариант<input id="irr-catalog-variant" maxlength="150" placeholder="Напр. MP100090, 90–210°"></label><label class="field">Количество<input id="irr-catalog-qty" type="number" min="0.01" step="any" value="1"></label><label class="field">Ценова единица<input id="irr-catalog-unit" maxlength="30" value="бр."></label><label class="field">Потвърдена публична ед. цена с ДДС (€)<input id="irr-catalog-price" type="number" min="0" step="0.01"></label><label class="quote-check"><input id="irr-catalog-confirm" type="checkbox">Потвърдих точния вариант, единица и цена за сметката</label><label class="quote-check"><input id="irr-catalog-cost" type="checkbox" checked>Попълни собствената единична цена</label><label class="quote-check"><input id="irr-catalog-sale" type="checkbox">Използвай тази цена и за клиента</label><small>Покупната и офертната цена се редактират поотделно след добавяне. Не се начислява автоматично надценка или втори ДДС. Ролки и комплекти не се превръщат автоматично в метри или бройки.</small><button type="button" class="secondary wide" data-action="irr-catalog-add">Добави избрания артикул</button></details>`}
-function irrigationCatalogOptions(query,group){const q=query.trim().toLocaleLowerCase('bg'),rows=IRR_SUPPLIER_CATALOG.filter(p=>(!group||p.group===group)&&(!q||p.name.toLocaleLowerCase('bg').includes(q)));return '<option value="">Избери артикул… ('+rows.length+')</option>'+rows.slice(0,100).map(p=>`<option value="${p.id}">${esc(p.name)} · ${money(p.price)}${p.conflict?' · провери цената':''}</option>`).join('')}
-function refreshIrrigationCatalog(){const pick=$('#irr-catalog-pick');if(!pick)return;pick.innerHTML=irrigationCatalogOptions($('#irr-catalog-search').value,$('#irr-catalog-group').value);$('#irr-catalog-info').textContent='Показват се до 100 резултата. Стесни търсенето при нужда.';$('#irr-catalog-confirm').checked=false;$('#irr-catalog-price').value='';}
-function chooseIrrigationCatalog(){const p=IRR_SUPPLIER_CATALOG.find(p=>p.id===$('#irr-catalog-pick').value);$('#irr-catalog-confirm').checked=false;if(!p)return;$('#irr-catalog-unit').value=p.unit;$('#irr-catalog-price').value=p.price;$('#irr-catalog-variant').value='';$('#irr-catalog-info').innerHTML=`<p>${esc(p.name)}<br>Публичен ориентир: ${money(p.price)} с ДДС${p.conflict?' · Открити са различни цени в публичните страници. Провери преди използване.':''}</p><a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Отвори категорията / източника ↗</a><p>Избери точния вариант в магазина. Посочената цена може да е за базов размер; отбележи мярката и опаковката.</p>`;}
-function irrigationCatalogBuildItem(p,input){if(!p||!input.confirmed)throw Error('Потвърди точния вариант, единицата и цената.');const qty=Number(input.qty),price=Number(input.price),unit=String(input.unit||'').trim(),variant=String(input.variant||'').trim();if(!Number.isFinite(qty)||qty<=0||qty>1e8||!Number.isFinite(price)||price<0||price>1e8||!unit||unit.length>30||/[|\r\n]/.test(unit+variant))throw Error('Провери количество, цена, вариант и мярка.');const name=p.name+(variant?' — '+variant:'');if(name.length>300)throw Error('Съкрати описанието на варианта.');return {name,group:p.group,unit,qty,cost:input.copyCost?price:0,price:input.copySale?price:0,includeInPrice:true,supplierId:p.id,supplierName:'napoqvane.com',sourceURL:p.url,sourceChecked:p.checked,referencePrice:p.price,confirmedPrice:price,priceConfirmed:true};}
+IRR_SUPPLIER_CATALOG.forEach(p=>{p.supplier=p.supplier||'napoqvane.com'});
+IRR_SUPPLIER_CATALOG.push(...[
+  {
+    "id": "angro-pe-20-pn10",
+    "name": "PE-HD тръба Ø20 mm PN10",
+    "group": "Тръби и фитинги",
+    "supplier": "Angro",
+    "unit": "m",
+    "price": 0.48,
+    "regularPrice": 0.59,
+    "sku": "PE20005",
+    "diameter": 20,
+    "pressureClass": "PN10",
+    "url": "https://www.angro.bg/polietilenova-trieba-20mm.html",
+    "checked": "2026-11-13",
+    "note": "Публична онлайн промоционална цена с ДДС за 1 линеен метър. Въведи дължината в метри; няма потвърдена дължина на ролката или минимален отрез. Цената на място и партньорската ти отстъпка се потвърждават отделно. PN10 е клас на тръбата; оразмеряването се проверява според проекта."
+  },
+  {
+    "id": "angro-pe-25-pn10",
+    "name": "PE-HD тръба Ø25 mm PN10",
+    "group": "Тръби и фитинги",
+    "supplier": "Angro",
+    "unit": "m",
+    "price": 0.69,
+    "regularPrice": 0.85,
+    "sku": "PE20004",
+    "diameter": 25,
+    "pressureClass": "PN10",
+    "url": "https://www.angro.bg/polietilenova-trieba-25mm.html",
+    "checked": "2026-11-13",
+    "note": "Публична онлайн промоционална цена с ДДС за 1 линеен метър. Въведи дължината в метри; няма потвърдена дължина на ролката или минимален отрез. Цената на място и партньорската ти отстъпка се потвърждават отделно. PN10 е клас на тръбата; оразмеряването се проверява според проекта."
+  },
+  {
+    "id": "angro-pe-32-pn10",
+    "name": "PE-HD тръба Ø32 mm PN10",
+    "group": "Тръби и фитинги",
+    "supplier": "Angro",
+    "unit": "m",
+    "price": 0.89,
+    "regularPrice": 1.09,
+    "sku": "PE20003",
+    "diameter": 32,
+    "pressureClass": "PN10",
+    "url": "https://www.angro.bg/polietilenova-trieba-32mm.html",
+    "checked": "2026-11-13",
+    "note": "Публична онлайн промоционална цена с ДДС за 1 линеен метър. Въведи дължината в метри; няма потвърдена дължина на ролката или минимален отрез. Цената на място и партньорската ти отстъпка се потвърждават отделно. PN10 е клас на тръбата; оразмеряването се проверява според проекта."
+  },
+  {
+    "id": "angro-pe-40-pn10",
+    "name": "PE-HD тръба Ø40 mm PN10",
+    "group": "Тръби и фитинги",
+    "supplier": "Angro",
+    "unit": "m",
+    "price": 1.26,
+    "regularPrice": 1.55,
+    "sku": "PE20001",
+    "diameter": 40,
+    "pressureClass": "PN10",
+    "url": "https://www.angro.bg/polietilenova-trieba-40mm.html",
+    "checked": "2026-11-13",
+    "note": "Публична онлайн промоционална цена с ДДС за 1 линеен метър. Въведи дължината в метри; няма потвърдена дължина на ролката или минимален отрез. Цената на място и партньорската ти отстъпка се потвърждават отделно. PN10 е клас на тръбата; оразмеряването се проверява според проекта."
+  },
+  {
+    "id": "angro-pe-50-pn10",
+    "name": "PE-HD тръба Ø50 mm PN10",
+    "group": "Тръби и фитинги",
+    "supplier": "Angro",
+    "unit": "m",
+    "price": 2.07,
+    "regularPrice": 2.55,
+    "sku": "PE20002",
+    "diameter": 50,
+    "pressureClass": "PN10",
+    "url": "https://www.angro.bg/polietilenova-trieba-50mm.html",
+    "checked": "2026-11-13",
+    "note": "Публична онлайн промоционална цена с ДДС за 1 линеен метър. Въведи дължината в метри; няма потвърдена дължина на ролката или минимален отрез. Цената на място и партньорската ти отстъпка се потвърждават отделно. PN10 е клас на тръбата; оразмеряването се проверява според проекта."
+  }
+]);
+
+function irrigationCatalogFields(){return `<details class="zone-card" open><summary>Каталог за поливни системи · ${IRR_SUPPLIER_CATALOG.length} ценови позиции</summary><p>Публични ориентири в евро с ДДС, прегледани на 13.11.2026 г. Част от страниците са кеширани и цените може да са променени. Доставчици: napoqvane.com и Angro. Това не е партньорският ти ценоразпис. Потвърди наличност, вариант, ценова единица и доставка.</p>${irrigationSupplierSelect('irr-catalog-supplier','Доставчик на артикула')}<label class="field">Търси артикул<input id="irr-catalog-search" placeholder="MP 1000, Hunter, клапан…"></label><label class="field">Група артикули<select id="irr-catalog-group"><option value="">Всички</option>${[...new Set(IRR_SUPPLIER_CATALOG.map(p=>p.group))].map(g=>`<option>${esc(g)}</option>`).join('')}</select></label><label class="field">Артикул от партньора<select id="irr-catalog-pick">${irrigationCatalogOptions('','')}</select></label><div id="irr-catalog-info"></div><label class="field">Точен размер / вариант<input id="irr-catalog-variant" maxlength="150" placeholder="Напр. MP100090, 90–210°"></label><label class="field">Количество<input id="irr-catalog-qty" type="number" min="0.01" step="any" value="1"></label><label class="field">Ценова единица<input id="irr-catalog-unit" maxlength="30" value="бр."></label><label class="field">Потвърдена публична ед. цена с ДДС (€)<input id="irr-catalog-price" type="number" min="0" step="0.01"></label><label class="quote-check"><input id="irr-catalog-confirm" type="checkbox">Потвърдих точния вариант, единица и цена за сметката</label><label class="quote-check"><input id="irr-catalog-cost" type="checkbox" checked>Попълни собствената единична цена</label><label class="quote-check"><input id="irr-catalog-sale" type="checkbox">Използвай тази цена и за клиента</label><small>Покупната и офертната цена се редактират поотделно след добавяне. Не се начислява автоматично надценка или втори ДДС. Ролки и комплекти не се превръщат автоматично в метри или бройки.</small><button type="button" class="secondary wide" data-action="irr-catalog-add">Добави избрания артикул</button></details>`}
+function irrigationCatalogOptions(query,group,supplier=''){const q=query.trim().toLocaleLowerCase('bg'),rows=IRR_SUPPLIER_CATALOG.filter(p=>(!supplier||p.supplier===supplier)&&(!group||p.group===group)&&(!q||(p.name+' '+p.supplier+' '+(p.sku||'')).toLocaleLowerCase('bg').includes(q)));return '<option value="">Избери артикул… ('+rows.length+')</option>'+rows.slice(0,100).map(p=>`<option value="${p.id}">${esc(p.name)} · ${esc(p.supplier)} · ${money(p.price)}/${esc(p.unit)}${p.conflict?' · провери цената':''}</option>`).join('')}
+function refreshIrrigationCatalog(){const pick=$('#irr-catalog-pick');if(!pick)return;pick.innerHTML=irrigationCatalogOptions($('#irr-catalog-search').value,$('#irr-catalog-group').value,$('#irr-catalog-supplier').value);$('#irr-catalog-info').textContent='Показват се до 100 резултата. Стесни търсенето при нужда.';$('#irr-catalog-confirm').checked=false;$('#irr-catalog-price').value='';}
+function chooseIrrigationCatalog(){const p=IRR_SUPPLIER_CATALOG.find(p=>p.id===$('#irr-catalog-pick').value);$('#irr-catalog-confirm').checked=false;if(!p)return;$('#irr-catalog-unit').value=p.unit;$('#irr-catalog-price').value=p.price;$('#irr-catalog-variant').value='';$('#irr-catalog-info').innerHTML=`<p>${esc(p.name)}<br>Доставчик: ${esc(p.supplier)}${p.sku?' · Код: '+esc(p.sku):''}<br>Публичен ориентир: ${money(p.price)}/${esc(p.unit)} с ДДС${p.conflict?' · Открити са различни цени в публичните страници. Провери преди използване.':''}</p><a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Отвори категорията / източника ↗</a><p>${esc(p.note||'Избери точния вариант в магазина. Посочената цена може да е за базов размер; отбележи мярката и опаковката.')}</p>`;}
+function irrigationCatalogBuildItem(p,input){if(!p||!input.confirmed)throw Error('Потвърди точния вариант, единицата и цената.');const qty=Number(input.qty),price=Number(input.price),unit=String(input.unit||'').trim(),variant=String(input.variant||'').trim();if(!Number.isFinite(qty)||qty<=0||qty>1e8||!Number.isFinite(price)||price<0||price>1e8||!unit||unit.length>30||/[|\r\n]/.test(unit+variant))throw Error('Провери количество, цена, вариант и мярка.');const name=p.name+(variant?' — '+variant:'');if(name.length>300)throw Error('Съкрати описанието на варианта.');return {name,group:p.group,unit,qty,cost:input.copyCost?price:0,price:input.copySale?price:0,includeInPrice:true,supplierId:p.id,supplierName:p.supplier||'napoqvane.com',sourceURL:p.url,sourceChecked:p.checked,referencePrice:p.price,confirmedPrice:price,priceConfirmed:true};}
 function addIrrigationCatalogItem(){readBuildRows();if(irrigationBuildDraft.length>=200)throw Error('До 200 позиции в един проект.');const p=IRR_SUPPLIER_CATALOG.find(p=>p.id===$('#irr-catalog-pick').value);const r=irrigationCatalogBuildItem(p,{confirmed:$('#irr-catalog-confirm').checked,qty:$('#irr-catalog-qty').value,price:$('#irr-catalog-price').value,unit:$('#irr-catalog-unit').value,variant:$('#irr-catalog-variant').value,copyCost:$('#irr-catalog-cost').checked,copySale:$('#irr-catalog-sale').checked});irrigationBuildDraft.push(r);paintBuildRows();toast('Артикулът е добавен. Прегледай офертната цена и запази проекта.');}
-function irrigationCatalogView(){const q=state.irrCatalogQuery||'',g=state.irrCatalogGroup||'',rows=IRR_SUPPLIER_CATALOG.filter(p=>(!g||p.group===g)&&p.name.toLocaleLowerCase('bg').includes(q.toLocaleLowerCase('bg')));return `<section class="card"><h2>napoqvane.com · цени за поливни системи</h2><p>${IRR_SUPPLIER_CATALOG.length} публични ценови позиции. Ориентири с ДДС; варианти и наличности се потвърждават. Не е автоматична връзка със склада или партньорския ти профил.</p><label class="field">Търси в каталога<input id="irr-public-search" value="${esc(q)}" placeholder="Hunter, MP, шахта…"></label><label class="field">Група<select id="irr-public-group"><option value="">Всички</option>${[...new Set(IRR_SUPPLIER_CATALOG.map(p=>p.group))].map(x=>`<option ${x===g?'selected':''}>${esc(x)}</option>`).join('')}</select></label><p>За сметка: отвори проект → Редакция → Части, консумативи и работи → Каталог napoqvane.com.</p><div id="irr-public-results">${irrigationCatalogResults(rows)}</div></section>`}
-function irrigationCatalogResults(rows){return `<p>${rows.length} резултата · показани до 60</p>`+rows.slice(0,60).map(p=>`<article class="zone-card"><h3>${esc(p.name)}</h3><p>${esc(p.group)} · ${money(p.price)} с ДДС<br>Публичен ценови ориентир, преглед 13.11.2026 г.${p.conflict?'<br>Различни публични цени — провери актуалната.':''}</p><a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Категория в магазина ↗</a></article>`).join('')}
-function setupIrrigationCatalog(){views['irrigation-catalog']=irrigationCatalogView;titles['irrigation-catalog']='Каталог за поливни системи';document.addEventListener('change',e=>{if(e.target.id==='irr-catalog-group')refreshIrrigationCatalog();if(e.target.id==='irr-catalog-pick')chooseIrrigationCatalog();if(e.target.closest('#irrigation-build')&&['irr-catalog-unit','irr-catalog-price','irr-catalog-variant'].includes(e.target.id))$('#irr-catalog-confirm').checked=false;if(e.target.id==='irr-public-group'){state.irrCatalogGroup=e.target.value;updateIrrigationCatalogResults();}});document.addEventListener('input',e=>{if(e.target.id==='irr-catalog-search')refreshIrrigationCatalog();if(['irr-catalog-unit','irr-catalog-price','irr-catalog-variant'].includes(e.target.id))$('#irr-catalog-confirm').checked=false;if(e.target.id==='irr-public-search'){state.irrCatalogQuery=e.target.value;updateIrrigationCatalogResults();}});}
-function updateIrrigationCatalogResults(){const q=(state.irrCatalogQuery||'').toLocaleLowerCase('bg'),g=state.irrCatalogGroup||'';$('#irr-public-results').innerHTML=irrigationCatalogResults(IRR_SUPPLIER_CATALOG.filter(p=>(!g||p.group===g)&&p.name.toLocaleLowerCase('bg').includes(q)));}
+function irrigationCatalogView(){const q=state.irrCatalogQuery||'',g=state.irrCatalogGroup||'',rows=irrigationFilteredCatalog(q,g,state.irrCatalogSupplier||'');return `<section class="card"><h2>Артикули и цени за поливни системи</h2><p>${IRR_SUPPLIER_CATALOG.length} публични ценови позиции. Ориентири с ДДС; варианти и наличности се потвърждават. Доставчици: napoqvane.com и Angro. Не е автоматична връзка със склада или партньорския ти профил.</p>${irrigationSupplierSelect('irr-public-supplier','Доставчик',state.irrCatalogSupplier||'')}<label class="field">Търси в каталога<input id="irr-public-search" value="${esc(q)}" placeholder="Hunter, MP, шахта…"></label><label class="field">Група<select id="irr-public-group"><option value="">Всички</option>${[...new Set(IRR_SUPPLIER_CATALOG.map(p=>p.group))].map(x=>`<option ${x===g?'selected':''}>${esc(x)}</option>`).join('')}</select></label><p>За сметка: отвори проект → Редакция → Части, консумативи и работи → Каталог за поливни системи.</p><div id="irr-public-results">${irrigationCatalogResults(rows)}</div></section>`}
+function irrigationCatalogResults(rows){return `<p>${rows.length} резултата · показани до 60</p>`+rows.slice(0,60).map(p=>`<article class="zone-card"><h3>${esc(p.name)}</h3><p>${esc(p.supplier)} · ${esc(p.group)}<br>${money(p.price)}/${esc(p.unit)} с ДДС${p.regularPrice?' · Промоционална онлайн цена':''}<br>Публичен ценови ориентир, преглед 13.11.2026 г.${p.conflict?'<br>Различни публични цени — провери актуалната.':''}${p.sku?'<br>Код: '+esc(p.sku):''}</p>${p.note?'<p>'+esc(p.note)+'</p>':''}<a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${p.supplier==='Angro'?'Артикул в Angro':'Категория в магазина'} ↗</a></article>`).join('')}
+function setupIrrigationCatalog(){views['irrigation-catalog']=irrigationCatalogView;titles['irrigation-catalog']='Каталог за поливни системи';document.addEventListener('change',e=>{if(['irr-catalog-group','irr-catalog-supplier'].includes(e.target.id))refreshIrrigationCatalog();if(e.target.id==='irr-catalog-pick')chooseIrrigationCatalog();if(e.target.closest('#irrigation-build')&&['irr-catalog-unit','irr-catalog-price','irr-catalog-variant'].includes(e.target.id))$('#irr-catalog-confirm').checked=false;if(e.target.id==='irr-public-supplier'){state.irrCatalogSupplier=e.target.value;updateIrrigationCatalogResults();}if(e.target.id==='irr-public-group'){state.irrCatalogGroup=e.target.value;updateIrrigationCatalogResults();}});document.addEventListener('input',e=>{if(e.target.id==='irr-catalog-search')refreshIrrigationCatalog();if(['irr-catalog-unit','irr-catalog-price','irr-catalog-variant'].includes(e.target.id))$('#irr-catalog-confirm').checked=false;if(e.target.id==='irr-public-search'){state.irrCatalogQuery=e.target.value;updateIrrigationCatalogResults();}});}
+function updateIrrigationCatalogResults(){$('#irr-public-results').innerHTML=irrigationCatalogResults(irrigationFilteredCatalog(state.irrCatalogQuery||'',state.irrCatalogGroup||'',state.irrCatalogSupplier||''));}
+function irrigationFilteredCatalog(query='',group='',supplier=''){const q=query.toLocaleLowerCase('bg');return IRR_SUPPLIER_CATALOG.filter(p=>(!supplier||p.supplier===supplier)&&(!group||p.group===group)&&(p.name+' '+p.supplier+' '+(p.sku||'')).toLocaleLowerCase('bg').includes(q));}
+function irrigationSupplierSelect(id,label,selected=''){return `<label class="field">${label}<select id="${id}"><option value="">Всички доставчици</option>${[...new Set(IRR_SUPPLIER_CATALOG.map(p=>p.supplier))].map(x=>`<option ${x===selected?'selected':''}>${esc(x)}</option>`).join('')}</select></label>`}
