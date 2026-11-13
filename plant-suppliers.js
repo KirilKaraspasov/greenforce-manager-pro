@@ -666,6 +666,59 @@ PLANT_SUPPLIERS.push(...[
   }
 ].map(r=>({...r,checked:'2026-11-12'})));
 for(const [product,id] of [['Hydrangea paniculata Polestar','polestar'],['Pulmonaria Trevi Fountain','trevi-fountain'],['Ajuga reptans Gold Chang','ajuga-gold-chang'],['Juniperus communis Green Carpet','juniper-green-carpet'],['Sedum SunSparkler Plum Dazzled','sedum-plum-dazzled']]){const r=PLANT_SUPPLIERS.find(r=>r.shop.startsWith('Иван Стерев')&&r.product===product);if(r)r.plantIds=[...new Set([...(r.plantIds||[]),id])];}
+PLANT_SUPPLIERS.push(...[
+  {
+    "id": "egarden-lonicera-pileata",
+    "name": "Лоницера пилеата",
+    "product": "Lonicera ligustrina var. pileata (syn. Lonicera pileata)",
+    "shop": "e-garden.bg",
+    "url": "https://e-garden.bg/product/лоницера-пилеата-lonicera-pileata/",
+    "plantIds": [
+      "lonicera-pileata"
+    ],
+    "price": null,
+    "status": "Онлайн поръчка — потвърди цена и бройки",
+    "checked": "2026-11-13",
+    "category": "Храсти",
+    "historical": false,
+    "source": "Публична продуктова страница",
+    "note": "Публичните извлечения показват 3,99 € и 4,99 €. Цената остава за потвърждение; контейнер, обявена височина 20–30 cm. Наличието на бутон за количка не потвърждава складова наличност. Цената не включва изчислена доставка."
+  },
+  {
+    "id": "egarden-heuchera-sanguinea",
+    "name": "Кървавочервена хойхера",
+    "product": "Heuchera sanguinea",
+    "shop": "e-garden.bg",
+    "url": "https://e-garden.bg/product/хойхера-heuchera-sanguinea/",
+    "plantIds": [
+      "heuchera-sanguinea"
+    ],
+    "price": 8.6,
+    "status": "Онлайн поръчка — потвърди цена и бройки",
+    "checked": "2026-11-13",
+    "category": "Цветя и почвопокривни",
+    "historical": false,
+    "source": "Публична продуктова страница",
+    "note": "Обявен контейнер, размер 10–20 cm. Уточни сорт и действителна окраска; не обещавай пурпурни листа на основния вид. Наличието на бутон за количка не потвърждава складова наличност. Цената не включва изчислена доставка."
+  },
+  {
+    "id": "egarden-euonymus-emerald-gold",
+    "name": "Фортунов евонимус Emerald n Gold",
+    "product": "Euonymus fortunei ‘Emerald ’n’ Gold’",
+    "shop": "e-garden.bg",
+    "url": "https://e-garden.bg/product/фортунов-евонимус-euonymus-fortunei-emerald-gold/",
+    "plantIds": [
+      "euonymus-emerald-gold"
+    ],
+    "price": 6.0,
+    "status": "Онлайн поръчка — потвърди цена и бройки",
+    "checked": "2026-11-13",
+    "category": "Храсти",
+    "historical": false,
+    "source": "Публична продуктова страница",
+    "note": "Обявен контейнер, височина 10–20 cm. Потвърди сортовия етикет Emerald n Gold и зимния риск за обекта. Наличието на бутон за количка не потвърждава складова наличност. Цената не включва изчислена доставка."
+  }
+]);
 function supplierRows(ids=null){return ids===null?PLANT_SUPPLIERS:PLANT_SUPPLIERS.filter(r=>ids.includes(r.id)||(r.plantIds||[]).some(id=>ids.includes(id)))}
 function supplierMatches(r){const q=(state.supplierSearch||'').trim().toLocaleLowerCase('bg');return (!q||[r.name,r.product,r.shop,r.category,r.status].join(' ').toLocaleLowerCase('bg').includes(q))&&(!state.supplierShop||r.shop===state.supplierShop)&&(!state.supplierCategory||r.category===state.supplierCategory)&&(!state.supplierStatus||(state.supplierStatus==='historical'?r.historical:state.supplierStatus==='current'?!r.historical&&r.source!=='Снимка на Facebook публикация':r.source==='Снимка на Facebook публикация'))}
 function supplierCard(r){return `<section class="card supplier-card"><h3>${esc(r.name)}</h3><p><strong>${esc(r.product)}</strong><br>${esc(r.shop)}</p><p>${esc(r.status)} · проверка ${date(r.checked)}</p>${r.category?`<p>${esc(r.category)}</p>`:''}<p>${r.price===null?'Няма потвърдена цена':(r.historical?'Историческа цена: ':'Последно видяна цена: ')+money(r.price)+'/бр.'}</p><small>${esc(r.note)}</small>${r.source?`<p class="muted">Източник: ${esc(r.source)}</p>`:''}${r.phone?`<p>${esc(r.delivery)}</p><a class="secondary wide" href="tel:${esc(r.phone)}">Обади се: ${esc(r.phone)}</a>`:''}<a class="secondary wide" href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">Отвори източника / поръчка ↗</a>${r.facebook&&r.url!==r.facebook?`<a class="secondary wide" href="${esc(r.facebook)}" target="_blank" rel="noopener noreferrer">Профил във Facebook ↗</a>`:''}</section>`}
