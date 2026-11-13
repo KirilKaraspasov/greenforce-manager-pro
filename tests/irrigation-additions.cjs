@@ -1,0 +1,25 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path'),root=path.resolve(__dirname,'..');
+const listeners={},nodes={};let rows=[],scrolls=0;
+const document={addEventListener(k,fn){(listeners[k]??=[]).push(fn)},querySelector:s=>nodes[s]||null,querySelectorAll:s=>s.includes('data-build-row')?rows:[]};
+const ctx=vm.createContext({URL,location:{href:'https://test.invalid/'},localStorage:{getItem:()=>null,setItem(){}},window:{},document,structuredClone,crypto:require('node:crypto').webcrypto,console,setTimeout,clearTimeout});
+for(const f of ['recommendations.js','media.js','document-templates.js','quotes.js','features.js','knowledge.js','flora.js','manager.js','portfolio.js','irrigation-catalog.js','irrigation-planner.js','inspections.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});
+vm.runInContext(fs.readFileSync(path.join(root,'app.js'),'utf8').split('let installPrompt=null')[0],ctx);
+const run=s=>vm.runInContext(s,ctx);
+for(const id of ['irr-part','irr-build-feedback','irr-catalog-feedback','irr-catalog-pick','irr-catalog-confirm','irr-catalog-qty','irr-catalog-price','irr-catalog-unit','irr-catalog-variant','irr-catalog-cost','irr-catalog-sale'])nodes['#'+id]={value:'',checked:false};
+ctx.renderRows=data=>{rows=data.map((r,i)=>({dataset:{buildRow:String(i)},scrollIntoView(){scrolls++},querySelectorAll(){return Object.entries(r).filter(([k])=>['name','group','unit','qty','cost','price','includeInPrice'].includes(k)).map(([k,v])=>({dataset:{buildField:k},type:k==='includeInPrice'?'checkbox':'text',checked:v,value:String(v)}))}}))};
+run("toast=()=>{};paintBuildRows=()=>renderRows(irrigationBuildDraft);setupIrrigationPlanner();");
+const click=async action=>{for(const fn of listeners.click||[])await fn({target:{closest:()=>({dataset:{action}})}})};
+(async()=>{
+nodes['#irr-part'].value='2';await click('irr-part-add');assert.equal(run('irrigationBuildDraft.length'),1);
+run("irrigationBuildDraft[0].price=27;paintBuildRows()");
+await click('irr-part-custom');assert.equal(run('irrigationBuildDraft.length'),2);assert.equal(run('irrigationBuildDraft[0].price'),27);
+nodes['#irr-catalog-pick'].value=run("IRR_SUPPLIER_CATALOG.find(p=>p.name==='Дюзи Hunter MP Rotator MP 1000').id");
+Object.assign(nodes['#irr-catalog-qty'],{value:'3'});nodes['#irr-catalog-price'].value='13.8';nodes['#irr-catalog-unit'].value='бр.';nodes['#irr-catalog-cost'].checked=true;
+await click('irr-catalog-add');assert.equal(run('irrigationBuildDraft.length'),2);assert.match(nodes['#irr-catalog-feedback'].textContent,/Потвърди/);
+nodes['#irr-catalog-confirm'].checked=true;await click('irr-catalog-add');assert.equal(run('irrigationBuildDraft.length'),3);assert.equal(run('irrigationBuildDraft[2].cost'),13.8);assert.equal(scrolls,3);
+assert.match(nodes['#irr-build-feedback'].textContent,/позиция 3/);
+run("const saved={};collectIrrigationBuild({querySelector:()=>null},saved);const restored=JSON.parse(JSON.stringify(saved));validateBuildItems(restored.buildItems)");
+assert.equal(run('restored.buildItems.length'),3);
+console.log('PASS click handlers: successive standard/custom/catalog additions, visible confirmation errors, preserved prices, reveal each new row, collect and restore');
+})().catch(e=>{console.error(e);process.exitCode=1});
