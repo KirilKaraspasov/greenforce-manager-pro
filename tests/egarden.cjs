@@ -1,0 +1,31 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path'),root=path.resolve(__dirname,'..');
+const ctx=vm.createContext({URL,Date,location:{href:'https://example.test/app/'},localStorage:{getItem:()=>null,setItem(){}},window:{},document:{addEventListener(){},documentElement:{dataset:{},style:{}}},matchMedia:()=>({matches:false,addEventListener(){}}),structuredClone,crypto:require('node:crypto').webcrypto,console,setTimeout,clearTimeout,Blob});
+for(const n of ['recommendations.js','media.js','document-templates.js','quotes.js','features.js','knowledge.js','flora.js','plant-photos.js','plant-calendar.js','plant-expansion.js','encyclopedia-regions.js','garden-tools.js','encyclopedia.js','manager.js','portfolio.js','irrigation-planner.js','inspections.js','pet-safety.js','garden-planner.js','garden-combinations.js','plant-suppliers.js','egarden-catalog.js'])vm.runInContext(fs.readFileSync(path.join(root,n),'utf8'),ctx,{filename:n});vm.runInContext(fs.readFileSync(path.join(root,'app.js'),'utf8').split('let installPrompt=null')[0],ctx,{filename:'app.js'});const run=s=>vm.runInContext(s,ctx);
+vm.runInContext(fs.readFileSync(path.join(root,'app.js'),'utf8').split('\n').find(l=>l.startsWith('function documentPDFOptions(')),ctx);
+assert.equal(run('EGARDEN_PRODUCTS.length'),50);assert.equal(run('EGARDEN_PROFILES.length'),35);assert.equal(run('ENC_PLANTS.length'),218);assert.equal(run('PLANT_SUPPLIERS.length'),99);assert.equal(run('GARDEN_COMBOS.length'),13);
+assert.equal(run('new Set(EGARDEN_PRODUCTS.map(x=>x.url)).size'),50);
+assert.equal(run('EGARDEN_PRODUCTS.every(x=>x.shop==="e-garden.bg"&&x.checked==="2026-11-13"&&x.price>0&&x.priceMax>=x.price&&x.deliverySize&&x.plantIds.length===1&&encFind(x.plantIds[0]))'),true);
+assert.equal(run('EGARDEN_PRODUCTS.reduce((n,x)=>n+x.variants.length,0)'),21);
+assert.equal(run('new Set(ENC_PLANTS.map(x=>x.id)).size===ENC_PLANTS.length'),true);
+assert.equal(run('new Set(PLANT_SUPPLIERS.map(x=>x.id)).size===PLANT_SUPPLIERS.length'),true);
+assert.equal(run('EGARDEN_PRODUCTS.find(x=>x.plantIds.includes("eg-thuja-smaragd")).priceMax'),49.8);
+assert.equal(run('EGARDEN_PRODUCTS.find(x=>x.plantIds.includes("petunia")).variants.length'),2);
+assert.equal(run('supplierRows(["eg-thuja-smaragd"]).length'),1);
+assert.match(run('supplierCard(EGARDEN_PRODUCTS.find(x=>x.plantIds.includes("eg-novita")))'),/13,27[\s\S]*29,92[\s\S]*20,43/);
+assert.match(run('encFind("eg-season-vinca").care.join(" ")'),/Vinca minor/);
+assert.equal(run('encClimate(encFind("eg-season-vinca")).code'),'seasonal');
+assert.equal(run('encClimate(encFind("eg-azalea")).code'),'sheltered');
+assert.notEqual(run('encFind("eg-sedum-acre").id'),run('encFind("sedum").id'));
+run('db.clients=[{id:"c",name:"Тест"}];setupCombinations();db.plantings=EGARDEN_PRODUCTS.map((x,i)=>({id:"p"+i,clientId:"c",plantId:x.plantIds[0],quantity:1,location:"",notes:"",documentPhotos:[]}));validate(db);const previous=JSON.stringify(db)');
+for(const id of ['egarden-hedge','egarden-sunny','egarden-shrubs']){
+ const ids=run(`comboById('${id}').plants.map(x=>x[0])`);
+ for(const plant of ids)assert.ok(run(`supplierRows(['${plant}']).some(x=>x.shop==='e-garden.bg')`));
+ assert.equal(run(`comboPlantRows(comboById('${id}'),20).every(x=>x.price==='')`),true);
+ const text=run(`comboText(comboById('${id}'))`);assert.doesNotMatch(text,/e-garden|https:|24,24|49,80/);
+ const pref=run(`gpOfferPref({id:'plan',clientId:'c',title:'План',inputs:{comboId:'${id}'},zoneSnapshot:{name:'Зона'}},[{name:'Растение',qty:3,unit:'бр.',price:10}])`);assert.equal(pref.comboCoverId,id);assert.doesNotMatch(JSON.stringify(pref),/e-garden|supplier|variants|display_price/);
+ assert.ok(fs.existsSync(path.join(root,'assets/combinations/'+id+'.png')));
+}
+assert.equal(run('JSON.stringify(db)===previous'),true);
+const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),sw=fs.readFileSync(path.join(root,'sw.js'),'utf8');assert.ok(index.indexOf('egarden-catalog.js')<index.indexOf('./app.js'));assert.match(sw,/egarden-catalog.js/);for(const name of ['egarden-hedge','egarden-sunny','egarden-shrubs'])assert.ok(sw.includes('assets/combinations/'+name+'.png'));
+console.log('PASS complete 50-product coverage, 35 distinct new profiles, 21 prices by variant, no duplicate IDs, valid archive references, uncertain taxa flags, three scaled editable offers, private procurement data excluded, offline assets and no silent writes');
