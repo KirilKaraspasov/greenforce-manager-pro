@@ -7,8 +7,8 @@ for(const n of ['recommendations.js','media.js','document-templates.js','quotes.
 
 vm.runInContext(fs.readFileSync(path.join(root,'app.js'),'utf8').split('\n').find(l=>l.startsWith('function documentPDFOptions(')),ctx);
 run("db.clients=[{id:'c',name:'Обект'}]; setupCombinations(); setupPlantSuppliers()");
-assert.equal(run('PLANT_SUPPLIERS.length'),49);assert.equal(run('new Set(PLANT_SUPPLIERS.map(r=>r.id)).size'),49);
-assert.equal(run('PLANT_SUPPLIERS.every(r=>new URL(r.url).protocol==="https:"&&r.checked==="2026-11-12")'),true);
+assert.equal(run('PLANT_SUPPLIERS.length'),52);assert.equal(run('new Set(PLANT_SUPPLIERS.map(r=>r.id)).size'),52);
+assert.equal(run('PLANT_SUPPLIERS.every(r=>new URL(r.url).protocol==="https:"&&["2026-11-12","2026-11-13"].includes(r.checked))'),true);
 assert.match(run('supplierPanel(["woodland-sage"])'),/Потвърди по телефон/);assert.match(run('supplierPanel(["perennial-aster"])'),/Callistephus/);
 assert.equal(run('supplierRows(["echinacea","rudbeckia"]).length'),2);
 assert.match(run('suppliersView()'),/Вътрешен списък/);assert.match(run('supplierPanel()'),/target="_blank" rel="noopener noreferrer"/);
@@ -37,3 +37,10 @@ assert.equal(run('supplierRows(comboById("silver-lime").plants.map(p=>p[0])).len
 assert.equal(run('supplierRows(comboById("green-purple").plants.map(p=>p[0])).length'),2);
 assert.equal(run('supplierRows(comboById("green-purple").plants.map(p=>p[0])).every(r=>r.shop.startsWith("Иван Стерев"))'),true);
 console.log('PASS both new combinations resolve to exact supplier cultivars only');
+
+assert.equal(run("supplierRows(['lonicera-pileata']).length"),1);
+assert.equal(run("supplierRows(['heuchera-sanguinea']).length"),1);
+assert.equal(run("supplierRows(['euonymus-emerald-gold']).length"),1);
+assert.equal(run("supplierRows(['lonicera-pileata'])[0].price"),null);
+assert.match(run("supplierPanel(['lonicera-pileata'])"),/3,99|4,99/);
+console.log('PASS three e-garden products, exact species/cultivar matches and disputed price left unpriced');

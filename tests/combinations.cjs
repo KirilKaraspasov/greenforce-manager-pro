@@ -5,8 +5,8 @@ for(const n of ['recommendations.js','media.js','document-templates.js','quotes.
 
 
 run("db.clients=[{id:'c',name:'Обект'}];db.gardenZones=[{id:'z',clientId:'c',name:'Леха',area:20,kind:'bed',light:'Слънце',soil:'Средна',ph:7,region:'sofia',active:true}]");
-assert.equal(run('GARDEN_COMBOS.length'),8);
-assert.equal(run('new Set(GARDEN_COMBOS.map(c=>c.id)).size'),8);
+assert.equal(run('GARDEN_COMBOS.length'),10);
+assert.equal(run('new Set(GARDEN_COMBOS.map(c=>c.id)).size'),10);
 assert.equal(run('GARDEN_COMBOS.every(c=>c.plants.length>=2&&c.plants.every(([id])=>encFind(id)&&PLANT_CALENDAR[id]))'),true);
 assert.equal(run("comboPlantRows(GARDEN_COMBOS[0],20)[0].qty"),8);
 assert.throws(()=>run('comboPlantRows(GARDEN_COMBOS[0],0)'));
@@ -19,7 +19,7 @@ run("db.documents.push({...pref,id:'document',date:'2026-11-12',validUntil:'2026
 const idx=fs.readFileSync(path.join(root,'index.html'),'utf8'),sw=fs.readFileSync(path.join(root,'sw.js'),'utf8');assert.ok(idx.indexOf('garden-combinations.js')<idx.indexOf('./app.js'));assert.match(sw,/garden-combinations.js/);for(const id of run('GARDEN_COMBOS.map(c=>c.id)'))assert.ok(sw.includes('./assets/combinations/'+id+'.png'));
 console.log('PASS eight original combinations, valid plant dossiers, one hero each, scaling, no silent writes, proposal disclosure, offer cover and offline registrations');
 
-assert.equal(run('COMPOSITION_PLANTS.length'),5);
+assert.equal(run('COMPOSITION_PLANTS.length'),8);
 for(const id of ['silver-lime','green-purple']){
  const count=id==='silver-lime'?3:2;
  assert.equal(run(`comboById('${id}').plants.length`),count);
@@ -36,3 +36,17 @@ assert.equal(run('encFind("juniper-green-carpet").latin.includes("communis")'),t
 assert.equal(run('PLANT_CALENDAR["sedum-plum-dazzled"].height'),'15–20');
 run('db.plantings.push({id:"cultivar-record",clientId:"c",plantId:"polestar",quantity:5,location:"Леха",notes:"",documentPhotos:[]}); validate(db)');
 console.log('PASS exact cultivar dossiers, both scaled plans, editable prices, privacy and stored cultivar validation');
+
+for(const id of ['lonicera-coral','lonicera-gold']){
+ run(`state.comboId='${id}'`);
+ assert.equal(run(`comboById('${id}').plants.length`),3);
+ assert.equal(run(`comboPlantRows(comboById('${id}'),20).every(r=>r.price==='')`),true);
+ assert.doesNotMatch(run(`comboText(comboById('${id}'))`),/e-garden|rhs\.org|8,60|6,00/);
+ assert.match(run('comboDetail()'),/Отвори|досие/);
+}
+for(const id of ['lonicera-pileata','heuchera-sanguinea','euonymus-emerald-gold'])assert.equal(run(`ENC_PLANTS.filter(p=>p.id==='${id}').length`),1);
+assert.equal(run('ENC_PLANTS.length'),183);
+assert.equal(run("encClimate(encFind('euonymus-emerald-gold')).code"),'sheltered');
+assert.match(run("PLANT_CALENDAR['lonicera-pileata'].safety"),/не са за консумация/);
+assert.notEqual(run("encFind('honeysuckle').id"),run("encFind('lonicera-pileata').id"));
+console.log('PASS 183 profiles, two lonicera compositions, distinct taxa, editable scaled offer quantities, winter flags and public text privacy');
