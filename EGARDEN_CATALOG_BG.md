@@ -1,0 +1,54 @@
+# Растителен асортимент e-garden.bg — 13.11.2026
+
+Прегледани са всички четири страници от трите растителни категории: 30 широколистни, 12 иглолистни, 8 сезонни артикула. 50 уникални продуктови адреса. Извлечени са публичните EUR цени и 21 конкретни варианта. Това е моментна справка, не складова синхронизация или гаранция за доставка. Трите предишни e-garden артикула са обновени със същите идентичности; останалите доставчици са запазени. Не се публикуват клиентски записи. Текстовете са самостоятелни кратки работни описания, не копирани чужди описания; продуктови снимки не се копират. Неясните таксони са означени, без автоматично приравняване към сходно име.
+
+- Императа Red Baron — https://e-garden.bg/product/imperata-cylindrica-red-baron/
+- Алпийски еделвайс — https://e-garden.bg/product/%d0%b0%d0%bb%d0%bf%d0%b8%d0%b9%d1%81%d0%ba%d0%b8-%d0%b5%d0%b4%d0%b5%d0%bb%d0%b2%d0%b0%d0%b9%d1%81-leonthopodium-alpinum/
+- Бръшлян — https://e-garden.bg/product/%d0%b1%d1%80%d1%8a%d1%88%d0%bb%d1%8f%d0%bd-hedera-helix/
+- Градинска азалия — видът се уточнява — https://e-garden.bg/product/%d0%b3%d1%80%d0%b0%d0%b4%d0%b8%d0%bd%d1%81%d0%ba%d0%b0-%d0%b0%d0%b7%d0%b0%d0%bb%d0%b8%d1%8f-azalea/
+- Делосперма на Купър — https://e-garden.bg/product/%d0%b4%d0%b5%d0%bb%d0%be%d1%81%d0%bf%d0%b5%d1%80%d0%bc%d0%b0-delosperma-cooperii/
+- Дървовидна ружа — https://e-garden.bg/product/%d0%b4%d1%8a%d1%80%d0%b2%d0%be%d0%b2%d0%b8%d0%b4%d0%bd%d0%b0-%d1%80%d1%83%d0%b6%d0%b0-hibiscus-syriacus/
+- Хибридна кандилка — неуточнен сорт — https://e-garden.bg/product/%d0%ba%d0%b0%d0%bd%d0%b4%d0%b8%d0%bb%d0%ba%d0%b0-%d0%b0%d0%ba%d0%b2%d0%b8%d0%bb%d0%b5%d0%b3%d0%b8%d1%8f-aquilegia-hybrida/
+- Градински карамфил — хибридна група — https://e-garden.bg/product/%d0%ba%d0%b0%d1%80%d0%b0%d0%bc%d1%84%d0%b8%d0%bb-dianthus-hybridum/
+- Котонеастер Coral Beauty — https://e-garden.bg/product/cotoneaster-dammeri-coral-beauty/
+- Лавандула — https://e-garden.bg/product/lavandula-officinalis/
+- Лавровишна Novita — https://e-garden.bg/product/%d0%bb%d0%b0%d0%b2%d1%80%d0%be%d0%b2%d0%b8%d1%88%d0%bd%d0%b0-prunus-laurocerasus-novita/
+- Лизимахия Goldilocks — https://e-garden.bg/product/%d0%bb%d0%b8%d0%b7%d0%b8%d0%bc%d0%b0%d1%85%d0%b8%d1%8f-lysimachia-nummularia-goldilocks/
+- Лоницера пилеата — https://e-garden.bg/product/%d0%bb%d0%be%d0%bd%d0%b8%d1%86%d0%b5%d1%80%d0%b0-%d0%bf%d0%b8%d0%bb%d0%b5%d0%b0%d1%82%d0%b0-lonicera-pileata/
+- Мащерка — видът се уточнява — https://e-garden.bg/product/thymus/
+- Ананасова мента Variegata — https://e-garden.bg/product/%d0%bc%d0%b5%d0%bd%d1%82%d0%b0-mentha-variegata/
+- Овалнолистно птиче грозде — https://e-garden.bg/product/ligustrum-ovalifolium/
+- Пурпурен физокарпус Diabolo — https://e-garden.bg/product/%d1%84%d0%b8%d0%b7%d0%be%d0%ba%d0%b0%d1%80%d0%bf%d1%83%d1%81-physocarpus-opulifolius-diablo/
+- Риган — https://e-garden.bg/product/%d1%80%d0%b8%d0%b3%d0%b0%d0%bd-origanum-vulgare/
+- Лютива тлъстига — https://e-garden.bg/product/%d1%81%d0%b5%d0%b4%d1%83%d0%bc-sedum-acre-2/
+- Синя власатка — https://e-garden.bg/product/%d1%81%d0%b8%d0%bd%d1%8f-%d0%b2%d0%bb%d0%b0%d1%81%d0%b0%d1%82%d0%ba%d0%b0-festuca-glauca/
+- Мексиканско коило — https://e-garden.bg/product/%d1%81%d1%82%d0%b8%d0%bf%d0%b0-stipa-tenuissima/
+- Нисък флокс Дъглас — https://e-garden.bg/product/%d1%84%d0%bb%d0%be%d0%ba%d1%81-phlox-douglasii/
+- Евонимус Emerald n Gold — https://e-garden.bg/product/%d1%84%d0%be%d1%80%d1%82%d1%83%d0%bd%d0%be%d0%b2-%d0%b5%d0%b2%d0%be%d0%bd%d0%b8%d0%bc%d1%83%d1%81-euonymus-fortunei-emerald-gold/
+- Фотиния Red Robin — https://e-garden.bg/product/%d1%84%d0%be%d1%82%d0%b8%d0%bd%d0%b8%d1%8f-photinia-x-fraseri-red-robin/
+- Кървавочервена хойхера — https://e-garden.bg/product/%d1%85%d0%be%d0%b9%d1%85%d0%b5%d1%80%d0%b0-heuchera-sanguinea/
+- Хоста Brim Cup — https://e-garden.bg/product/%d1%85%d0%be%d1%81%d1%82%d0%b0-hosta-brim-cup/
+- Рожец — https://e-garden.bg/product/%d1%86%d0%b5%d1%80%d0%b0%d1%81%d1%82%d0%b8%d1%83%d0%bc-%d1%80%d0%be%d0%b6%d0%b5%d1%86-cerastium-tomentosum/
+- Японска дюля — https://e-garden.bg/product/chaenomeles-japonica/
+- Спирея Golden Princess — https://e-garden.bg/product/%d1%8f%d0%bf%d0%be%d0%bd%d1%81%d0%ba%d0%b0-%d1%81%d0%bf%d0%b8%d1%80%d0%b5%d1%8f-spiraea-japonica-golden-princess/
+- Японски евонимус — https://e-garden.bg/product/%d1%8f%d0%bf%d0%be%d0%bd%d1%81%d0%ba%d0%b8-%d0%b5%d0%b2%d0%be%d0%bd%d0%b8%d0%bc%d1%83%d1%81-%d1%87%d0%b0%d1%88%d0%ba%d0%be%d0%b4%d1%80%d1%8f%d0%bd-euonymus-japonica/
+- Кълбовиден лъжекипарис Globus — https://e-garden.bg/product/chamaesyparis-lawsoniana-globus-%d0%ba%d1%8a%d0%bb%d0%b1%d0%be%d0%b2%d0%b8%d0%b4%d0%b5%d0%bd-%d0%bb%d1%8a%d0%b6%d0%b5%d0%ba%d0%b8%d0%bf%d0%b0%d1%80%d0%b8%d1%81/
+- Колоновиден тис Fastigiata — https://e-garden.bg/product/taxus-baccata-fastigiata-%d0%ba%d0%be%d0%bb%d0%be%d0%bd%d0%be%d0%b2%d0%b8%d0%b4%d0%b5%d0%bd-%d1%82%d0%b8%d1%81/
+- Китайска хвойна Old Gold — https://e-garden.bg/product/juniperus-chinensis-old-gold/
+- Хоризонтална хвойна Andorra Compacta — https://e-garden.bg/product/%d0%ba%d0%be%d0%bc%d0%bf%d0%b0%d0%ba%d1%82%d0%bd%d0%b0-%d1%81%d1%82%d0%b5%d0%bb%d0%b5%d1%89%d0%b0-%d1%81%d0%b5-%d1%85%d0%b2%d0%be%d0%b9%d0%bd%d0%b0-juniperus-horizontalis-andorra-compacta/
+- Туя Golden Globe — https://e-garden.bg/product/thuja-occidentalis-golden-globe/
+- Туя Little Champion — https://e-garden.bg/product/thuja-occidentalis-little-champion-globe/
+- Туя Tiny Tim — https://e-garden.bg/product/kalbovidna-tuia-thuja-occidentalis-tiny-tim/
+- Лейландски кипарис — https://e-garden.bg/product/cupressocyparis-leylandii/
+- Туя Smaragd — https://e-garden.bg/product/thuja-occidentalis-smaragd/
+- Канадски смърч Conica — https://e-garden.bg/product/%d1%81%d0%bc%d1%8a%d1%80%d1%87-%d0%ba%d0%be%d0%bd%d0%b8%d0%ba%d0%b0-picea-glauca-conica/
+- Хвойна Blue Carpet — https://e-garden.bg/product/juniperus-squamata-blue-carpet/
+- Източна туя Aurea Nana — https://e-garden.bg/product/thuja-orientalis-aurea-nana/
+- Сезонна винка — видът се уточнява — https://e-garden.bg/product/kaskadna-vinca/
+- Газания — https://e-garden.bg/product/gazania-leten-gerber/
+- Градинска теменуга — https://e-garden.bg/product/gradinska-temenujka-viola-wittrockiana/
+- Едроцветно калдъръмче — https://e-garden.bg/product/kaldaramce-portulaca/
+- Петуния — https://e-garden.bg/product/petunia/
+- Каскадно сакъзче — група — https://e-garden.bg/product/sakazche-pelargonium-peltatum/
+- Хризантема Multiflora — група — https://e-garden.bg/product/chrysanthemum-multiflora/
+- Циганче — неуточнена група — https://e-garden.bg/product/impatiens/
