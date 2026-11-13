@@ -1,0 +1,18 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path'),root=path.resolve(__dirname,'..');let writes=0;
+const ctx=vm.createContext({URL,location:{href:'https://test.invalid/'},localStorage:{getItem:()=>null,setItem:()=>writes++},window:{},document:{addEventListener(){}},structuredClone,crypto:require('node:crypto').webcrypto,console,setTimeout,clearTimeout});
+for(const f of ['recommendations.js','media.js','document-templates.js','quotes.js','features.js','knowledge.js','flora.js','manager.js','portfolio.js','irrigation-catalog.js','irrigation-planner.js','inspections.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});
+vm.runInContext(fs.readFileSync(path.join(root,'app.js'),'utf8').split('let installPrompt=null')[0],ctx);const run=s=>vm.runInContext(s,ctx);
+assert.equal(run('IRR_SUPPLIER_CATALOG.filter(p=>p.supplier==="Angro").length'),5);
+assert.equal(run('IRR_SUPPLIER_CATALOG.filter(p=>p.supplier==="napoqvane.com").length'),348);
+assert.deepEqual(Array.from(run('irrigationFilteredCatalog("","","Angro").map(p=>p.diameter)')),[20,25,32,40,50]);
+assert.deepEqual(Array.from(run('irrigationFilteredCatalog("","","Angro").map(p=>p.price)')),[.48,.69,.89,1.26,2.07]);
+assert.equal(run('irrigationFilteredCatalog("PE20004","Тръби и фитинги","Angro").length'),1);
+assert.equal(run('irrigationFilteredCatalog("MP 1000","","Angro").length'),0);
+run(`db=blank();db.clients=[{id:'c',name:'Тест'}];const pipe=IRR_SUPPLIER_CATALOG.find(p=>p.id==='angro-pe-25-pn10');const item=irrigationCatalogBuildItem(pipe,{confirmed:true,qty:100,price:pipe.price,unit:pipe.unit,copyCost:true,copySale:true});const plan={id:'s',clientId:'c',name:'Система',buildItems:[item],buildDiscount:10,advance:0};db.irrigation=[plan];`);
+assert.equal(run('item.unit'),'m');assert.equal(run('item.supplierName'),'Angro');assert.equal(run('irrigationBuildTotals(plan).cost'),69);assert.equal(run('irrigationBuildTotals(plan).total'),62.1);
+run(`item.price=1.2;const pref=irrigationOfferPref(plan);const offer={...pref,id:'d',number:'О-2026-001',date:'2026-11-13',validUntil:'2026-12-13',contractorMode:'brand'};db.documents=[offer];const archive=validate(JSON.parse(JSON.stringify(db)));`);
+assert.equal(run('docTotal(offer)'),108);assert.equal(run('docLines(offer)[0].qty'),100);assert.equal(run('docLines(offer)[0].price'),1.2);assert(run('irrigationQuoteText(offer)').includes('Ø25 mm PN10 (m)'));assert(!/Angro|angro.bg|sourceURL|referencePrice/.test(run('JSON.stringify(irrigationQuotePDFOptions(offer))')));assert.equal(run('archive.irrigation[0].buildItems[0].supplierName'),'Angro');assert.equal(run('archive.irrigation[0].buildItems[0].cost'),.69);
+run('item.cost=.55');assert.equal(run('docTotal(offer)'),108);assert.equal(run('irrigationBuildTotals(plan).cost'),55);
+assert(!run('irrigationCatalogOptions("","","Angro")').includes('MP Rotator'));assert(run('irrigationCatalogOptions("","","Angro")').includes('0,69'));assert.equal(writes,0);
+console.log('PASS five Angro PN10 pipe sizes and per-metre prices, supplier and SKU filters, preserved 348 previous items, 100-metre cost and sale math with one discount, editable partner cost, private supplier snapshots, archive round trip and no automatic writes');
