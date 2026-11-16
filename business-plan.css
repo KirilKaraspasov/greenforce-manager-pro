@@ -1,0 +1,17 @@
+.business-plan .bp-table-wrap{width:100%;max-width:100%;overflow:hidden}
+.business-plan .bp-table{width:100%;table-layout:fixed;font-size:.78rem;border-collapse:collapse}
+.business-plan .bp-table td,.business-plan .bp-table th{padding:11px 4px;white-space:normal;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;text-align:right}
+.business-plan .bp-table th:first-child{width:29%;text-align:left}
+.business-plan .bp-table tbody th{font-weight:600;background:transparent}
+.business-plan .bp-table tr:nth-child(3) td,.business-plan .bp-table tr:nth-child(3) th{font-weight:700;color:var(--green)}
+.business-plan .bp-range{display:grid;grid-template-columns:1fr 1fr}
+.business-plan .bp-range button{white-space:normal;min-width:0}
+.bp-check{display:flex;align-items:flex-start;gap:12px;padding:13px 0;line-height:1.5;overflow-wrap:anywhere;min-width:0}
+.bp-check input[type=checkbox]{flex:0 0 23px;width:23px;height:23px;margin-top:2px;accent-color:#007a35}
+.bp-check span{min-width:0}
+.business-plan .bp-check:has(input[data-bp-goal]:checked) span{text-decoration:line-through;color:var(--muted)}
+.business-plan .bp-annual{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.business-plan .bp-annual p{font-size:.78rem;overflow-wrap:anywhere}
+.business-plan .bp-annual strong{display:block;font-size:1rem;font-variant-numeric:tabular-nums;margin-top:5px}
+.business-plan summary{font-weight:700;cursor:pointer;line-height:1.5}
+@media(max-width:380px){.business-plan .bp-table{font-size:.7rem}.business-plan .bp-table td,.business-plan .bp-table th{padding:10px 2px}.business-plan .bp-annual{grid-template-columns:1fr}.business-plan .bp-annual p{display:flex;justify-content:space-between;gap:8px;margin:0}.business-plan .bp-annual strong{margin:0}}
