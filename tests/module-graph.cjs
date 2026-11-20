@@ -1,0 +1,7 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),assert=require('node:assert/strict');const root=path.resolve(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8'),scripts=[...html.matchAll(/<script src="\.\/([^"?]+)(?:\?[^"\s]*)?"/g)].map(m=>m[1]),ctx=vm.createContext({console,URL,location:{href:'https://example.test/app/'},localStorage:{getItem:()=>null,setItem(){}},window:{},document:{addEventListener(){}},setTimeout,clearTimeout,structuredClone,crypto:require('node:crypto').webcrypto,Blob});
+for(const file of scripts){const source=fs.readFileSync(path.join(root,file),'utf8');vm.runInContext(file==='app.js'?source.split('let installPrompt=null')[0]:source,ctx,{filename:file});}
+assert(vm.runInContext("TABLES.includes('opsTrash')&&TABLES.includes('opsCalculations')&&typeof setupOperations==='function'",ctx));
+const cache=fs.readFileSync(path.join(root,'sw.js'),'utf8'),files=JSON.parse(cache.match(/const FILES=(\[[\s\S]*?\]);/)[1]);assert.equal(new Set(files).size,files.length);for(const file of files)assert(fs.existsSync(path.join(root,file==='./'?'index.html':file)),'Missing cache asset '+file);for(const file of scripts)assert(files.includes('./'+file),'Script missing from offline cache '+file);
+console.log('PASS complete browser script graph: no colliding globals; all '+scripts.length+' scripts and '+files.length+' offline assets exist.');
