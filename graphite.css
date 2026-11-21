@@ -1,0 +1,126 @@
+/* GreenForce Graphite: muted surfaces and readable, restrained accents. */
+html[data-theme="graphite"]{
+  color-scheme:dark;
+  --bg:#202624;--ink:#e2e7e3;--muted:#b2beb5;--line:#46504a;
+  --green:#9ac979;--dark:#d2dfd4;--lime:#a7cb82;--shadow:0 2px 8px #00000020;
+  --card:#292f2c;--border:#46504a;--gf-raised:#303833;--gf-input:#222925;
+  --gf-action:#a0cb80;--gf-action-ink:#172015;
+  background:#191f1c;scrollbar-color:#59645c #202624;
+}
+html[data-theme="graphite"] body{background:#191f1c;color:var(--ink);font-size:16px;line-height:1.5}
+html[data-theme="graphite"] .app-shell{background:var(--bg);box-shadow:0 0 48px #0003}
+html[data-theme="graphite"] header,html[data-theme="graphite"] nav{background:#252d28;color:var(--ink);box-shadow:none;border-color:var(--line)}
+html[data-theme="graphite"] header{border-bottom:1px solid var(--line)}
+html[data-theme="graphite"] nav{border-top:1px solid var(--line)}
+html[data-theme="graphite"] header small{color:var(--muted)}
+html[data-theme="graphite"] .brand strong span{color:var(--lime)}
+html[data-theme="graphite"] nav button{color:#b8c5ba;min-height:48px}
+html[data-theme="graphite"] nav button.active{color:#c4dfa7;background:#35412f}
+html[data-theme="graphite"] .card,html[data-theme="graphite"] .period,html[data-theme="graphite"] .kpi,
+html[data-theme="graphite"] dialog,html[data-theme="graphite"] .enc-card,
+html[data-theme="graphite"] .enc-open,html[data-theme="graphite"] .enc-region-panel{
+  background:var(--card);color:var(--ink);border-color:var(--line);
+}
+html[data-theme="graphite"] .tile{background:#2c342f;border-color:#4b574e;color:var(--ink);box-shadow:none}
+html[data-theme="graphite"] .tile svg{color:#b1d58f}
+html[data-theme="graphite"] .primary{background:var(--gf-action);color:var(--gf-action-ink);border-color:var(--gf-action);box-shadow:none}
+html[data-theme="graphite"] .secondary{background:#303d31;border-color:#586b55;color:#d2e4c6}
+html[data-theme="graphite"] .danger{background:#49332f;border-color:#866257;color:#f6c8b9}
+html[data-theme="graphite"] .iconbtn{color:inherit}
+html[data-theme="graphite"] button:focus-visible,html[data-theme="graphite"] a:focus-visible,
+html[data-theme="graphite"] input:focus-visible,html[data-theme="graphite"] select:focus-visible,
+html[data-theme="graphite"] textarea:focus-visible{outline:2px solid #c1df9c;outline-offset:3px}
+html[data-theme="graphite"] button:disabled{opacity:.65}
+html[data-theme="graphite"] a{color:#c0dca5}
+html[data-theme="graphite"] input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+html[data-theme="graphite"] select,html[data-theme="graphite"] textarea,
+html[data-theme="graphite"] .field input,html[data-theme="graphite"] .field select,
+html[data-theme="graphite"] .field textarea,html[data-theme="graphite"] .search,
+html[data-theme="graphite"] .period input,html[data-theme="graphite"] .enc-filters select{
+  background:var(--gf-input);color:var(--ink);border-color:#5b685e;caret-color:#d8e5ce;
+}
+html[data-theme="graphite"] input::placeholder,html[data-theme="graphite"] textarea::placeholder{color:#abb8ae;opacity:1}
+html[data-theme="graphite"] option{background:#252d28;color:var(--ink)}
+html[data-theme="graphite"] input[type="checkbox"],html[data-theme="graphite"] input[type="radio"],
+html[data-theme="graphite"] progress{accent-color:#a0cb80}
+html[data-theme="graphite"] .month-picker,html[data-theme="graphite"] .tabs{background:#333c35;color:var(--ink)}
+html[data-theme="graphite"] .tabs button{color:var(--ink)}
+html[data-theme="graphite"] .tabs button.active,html[data-theme="graphite"] .wp-tabs button.active,
+html[data-theme="graphite"] .day.selected{background:#a0cb80;color:#172015;border-color:#a0cb80}
+html[data-theme="graphite"] .wp-tabs button{background:#2c342f;color:var(--ink);border-color:var(--line)}
+html[data-theme="graphite"] .modal-head{background:#303a32;border-bottom:1px solid var(--line)}
+html[data-theme="graphite"] dialog::backdrop{background:#0d120fbb;backdrop-filter:blur(3px)}
+html[data-theme="graphite"] .list-row,html[data-theme="graphite"] .card button.list-row{background:transparent;color:var(--ink);border-color:var(--line)}
+html[data-theme="graphite"] .card.tint,html[data-theme="graphite"] .notice,
+html[data-theme="graphite"] .total,html[data-theme="graphite"] .money-flow,
+html[data-theme="graphite"] .kv div,html[data-theme="graphite"] .avatar,
+html[data-theme="graphite"] .enc-placeholder,html[data-theme="graphite"] .quote-package{
+ background:#34412f;color:#e0e9d8;border-color:#53634b;
+}
+html[data-theme="graphite"] .kpi.lime{background:#35402e;color:#e0e9d8}
+html[data-theme="graphite"] .kpi.blue{background:#2b3940;color:#dde6e9}
+html[data-theme="graphite"] .kpi.green{background:#304536;color:#deebdf;border:1px solid #50634e}
+html[data-theme="graphite"] .kpi small,html[data-theme="graphite"] .kpi.green small{color:#bac9bc}
+html[data-theme="graphite"] .hero{background:linear-gradient(90deg,#17221be8,#17221b80),url('./assets/document-cover.jpeg') center/cover;min-height:150px;padding:22px;border:1px solid #465047}
+html[data-theme="graphite"] .hero h2{font-size:27px;color:#e6ece5}
+html[data-theme="graphite"] .hero h2 span{color:#bbd59a}
+html[data-theme="graphite"] .hero p,html[data-theme="graphite"] .eyebrow{color:#d0ddc7}
+html[data-theme="graphite"] .slogan{color:#afc0ac}
+html[data-theme="graphite"] th,html[data-theme="graphite"] tfoot,
+html[data-theme="graphite"] .annual-table tfoot,html[data-theme="graphite"] .client-year-table .company-costs{background:#333e35;color:var(--ink)}
+html[data-theme="graphite"] td,html[data-theme="graphite"] th{border-color:var(--line)}
+html[data-theme="graphite"] .donut>div{background:var(--card);color:var(--ink)}
+html[data-theme="graphite"] .badge,html[data-theme="graphite"] .pet-safe,
+html[data-theme="graphite"] .enc-season.enc-now{background:#3a4b30;color:#d8ebbf}
+html[data-theme="graphite"] .badge.blue{background:#334451;color:#cedff5}
+html[data-theme="graphite"] .badge.amber,html[data-theme="graphite"] .install-note{background:#4c432c;color:#f1dfae;border-color:#756544}
+html[data-theme="graphite"] .badge.red,html[data-theme="graphite"] .pet-toxic,
+html[data-theme="graphite"] .error{background:#4b332f;color:#f5c4b5}
+html[data-theme="graphite"] .pet-unknown{background:#3b423d;color:#d1d9d2}
+html[data-theme="graphite"] .zone-card,html[data-theme="graphite"] .quote-builder,
+html[data-theme="graphite"] .inspection-section,html[data-theme="graphite"] .inspection-area,
+html[data-theme="graphite"] .inspection-line,html[data-theme="graphite"] .gp-material-row,
+html[data-theme="graphite"] .lp-source,html[data-theme="graphite"] .enc-facts,
+html[data-theme="graphite"] .enc-facts span{background:#2c352e;color:var(--ink);border-color:var(--line)}
+html[data-theme="graphite"] .zone-card summary{color:#d3e0c6}
+html[data-theme="graphite"] .quote-row small,html[data-theme="graphite"] .lp-source small,
+html[data-theme="graphite"] .enc-open small,html[data-theme="graphite"] .enc-climate{color:var(--muted)}
+html[data-theme="graphite"] .enc-season,html[data-theme="graphite"] .enc-plant-months,
+html[data-theme="graphite"] .combo-tags span,html[data-theme="graphite"] .combo-number,
+html[data-theme="graphite"] .lp-number{background:#35422f;color:#d7e6c7}
+html[data-theme="graphite"] .combo-months span{background:#343c36;color:#bac7bd}
+html[data-theme="graphite"] .combo-months .bloom{background:#67495e;color:#f0d9e9}
+html[data-theme="graphite"] .work-step:has(input:checked){background:#33432f;color:#ccdcbc}
+html[data-theme="graphite"] .wp-progress{background:#3d483e}
+html[data-theme="graphite"] .wp-progress span{background:#9dbf77}
+html[data-theme="graphite"] .photo-tile{background:#333c36}
+html[data-theme="graphite"] .lp-intro{background:#2c3b30;border:1px solid #52614d;color:var(--ink)}
+html[data-theme="graphite"] .lp-intro h2{color:var(--ink)}
+html[data-theme="graphite"] #toast{background:#3b4b32;color:#e6eddf;border:1px solid #7b9467}
+html[data-theme="graphite"] .trip-share,html[data-theme="graphite"] .billing-row,
+html[data-theme="graphite"] .task-row,html[data-theme="graphite"] .work-step,
+html[data-theme="graphite"] .guide-steps li,html[data-theme="graphite"] .guide-sources,
+html[data-theme="graphite"] .quote-row,html[data-theme="graphite"] .quote-group,
+html[data-theme="graphite"] .bonus-row,html[data-theme="graphite"] .expense-entry,
+html[data-theme="graphite"] .supplier-card,html[data-theme="graphite"] .portfolio-choice,
+html[data-theme="graphite"] .inspection-answer,html[data-theme="graphite"] .lp-check,
+html[data-theme="graphite"] .lp-line,html[data-theme="graphite"] .ops-calc-line{border-color:var(--line)}
+html[data-theme="graphite"] .heaven-photo>small{background:var(--card);color:var(--muted)}
+html[data-theme="graphite"] .empty svg{color:#9cb489}
+html[data-theme="graphite"] .dot{background:#b5cf8d}
+@media(max-width:650px){
+ html[data-theme="graphite"] .home-layout{display:flex;flex-direction:column-reverse;gap:12px}
+ html[data-theme="graphite"] .home-layout .kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ html[data-theme="graphite"] .home-layout .kpi{padding:12px 8px}
+ html[data-theme="graphite"] .home-layout .kpi strong{font-size:clamp(16px,5vw,23px);letter-spacing:-.4px}
+ html[data-theme="graphite"] .home-layout .tile{min-height:76px}
+ html[data-theme="graphite"] .hero{min-height:140px;padding:20px}
+ html[data-theme="graphite"] .hero h2{font-size:25px}
+}
+/* More legible labels without forcing denser forms or smaller touch targets. */
+html[data-theme="graphite"] .kpi small,html[data-theme="graphite"] nav button,
+html[data-theme="graphite"] .statusline,html[data-theme="graphite"] header small{font-size:12px}
+html[data-theme="graphite"] .tile,html[data-theme="graphite"] .field,
+html[data-theme="graphite"] .tabs button{font-size:14px}
+html[data-theme="graphite"] .legend i{background:#a0cb80}
+html[data-theme="graphite"] .legend i.previous{background:#7f9787}
