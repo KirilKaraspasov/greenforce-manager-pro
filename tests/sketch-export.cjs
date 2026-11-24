@@ -1,7 +1,7 @@
 'use strict';
 const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),assert=require('node:assert/strict'),root=path.resolve(__dirname,'..');
 const ctx=vm.createContext({structuredClone,document:{addEventListener(){}},console});
-for(const f of ['sketch-metrics.js','irrigation-sketch.js','irrigation-sketch-app.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx);
+for(const f of ['sketch-metrics.js','irrigation-sketch.js','irrigation-planner.js','irrigation-sketch-app.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx);
 vm.runInContext(`system={name:'Test',clientId:'c',irrigationSketch:{...GFSketch.blank(),previewId:'preview',items:[{id:'p',type:'line',diameter:25,points:[[0,0],[200,0]],width:3,color:'#000'}]},buildItems:[{name:'Филтър',qty:1,unit:'бр.',group:'Капково',cost:999,price:888},{name:'Hidden',qty:1,unit:'бр.',includeInPrice:false,price:777},{sketchItemId:'gone',name:'Removed',qty:12},{sketchItemId:'p',name:'PE тръба Ø25',qty:99,price:123,cost:321}]};rows=sketchReferenceRows(system);blocks=sketchReferenceBlocks(rows);`,ctx);
 assert.equal(ctx.rows.length,3);assert.equal(ctx.rows.find(r=>r.sketchItemId==='p').qty,10);assert.equal(ctx.rows.find(r=>r.sketchItemId==='p').price,123);assert(!ctx.rows.some(r=>r.name==='Removed'));
 const table=ctx.blocks.find(b=>b.kind==='table');assert.equal(table.rows.length,2);const text=JSON.stringify(ctx.blocks);for(const secret of ['999','888','777','123','321','Hidden'])assert(!text.includes(secret));assert.equal(table.headers.length,3);
