@@ -2,7 +2,7 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path'),root=path.resolve(__dirname,'..');let writes=0,fail=false;
 const ctx=vm.createContext({URL,location:{href:'https://example.test/app/'},localStorage:{getItem:()=>null,setItem:()=>{if(fail)throw Error('QUOTA');writes++}},window:{},document:{addEventListener(){}},structuredClone,crypto:require('node:crypto').webcrypto,console,setTimeout,clearTimeout,Blob});
 for(const n of ['recommendations.js','media.js','document-templates.js','quotes.js','features.js','knowledge.js','flora.js','manager.js','portfolio.js','irrigation-planner.js','inspections.js','service-prices.js'])vm.runInContext(fs.readFileSync(path.join(root,n),'utf8'),ctx,{filename:n});
-vm.runInContext(fs.readFileSync(path.join(root,'app.js'),'utf8').split('let installPrompt=null')[0],ctx,{filename:'app.js'});const run=s=>vm.runInContext(s,ctx);run("toast=()=>{};db=blank();db.clients=[{id:'c',name:'ТЕСТ'}];db.services=[{id:'own',name:QUOTE_CATALOG[0].name,unit:'m²',amount:.33,notes:'Моя коригирана цена'}];const docsBefore=JSON.stringify(db.documents);change(()=>servicePriceMigrate(db));validate(db)");
+vm.runInContext(fs.readFileSync(path.join(root,'app.js'),'utf8').split('let installPrompt=null')[0],ctx,{filename:'app.js'});const run=s=>vm.runInContext(s,ctx);run("toast=()=>{};db=blank();db.clients=[{id:'c',name:'ТЕСТ'}];db.services=[{id:'own',name:QUOTE_CATALOG.find(r=>r.id==='mow').name,unit:'m²',amount:.33,notes:'Моя коригирана цена'}];const docsBefore=JSON.stringify(db.documents);change(()=>servicePriceMigrate(db));validate(db)");
 assert.equal(run('db.services.length'),run('servicePriceSources().length'));assert.equal(run("db.services.find(s=>s.id==='own').amount"),.33);assert.equal(run("db.services.find(s=>s.id==='own').notes"),'Моя коригирана цена');
 const count=run('db.services.length');run('servicePriceMigrate(db)');assert.equal(run('db.services.length'),count);assert.equal(run('JSON.stringify(db.documents)'),run('docsBefore'));
 assert.equal(run("quoteEditorRows({clientId:'c'}).filter(r=>r.id==='mow').length"),1);assert.equal(run("quoteEditorRows({clientId:'c'}).find(r=>r.id==='mow').price"),.33);assert.equal(run("inspectionCatalog().find(r=>r.id==='mow').price"),.33);
@@ -15,6 +15,19 @@ run("db.services.find(s=>s.catalogId==='architect:0').amount=150");assert(run('s
 run("const bad=structuredClone(db);bad.services[0].amount=-1");assert.throws(()=>run('validate(bad)'),/цена|сума/);run("bad.services[0].amount=0/0");assert.throws(()=>run('validate(bad)'),/стойност|сума|цена/);
 run("const duplicate=structuredClone(db);duplicate.services.push({...duplicate.services[0],id:'duplicate'})");assert.throws(()=>run('validate(duplicate)'),/Повторена/);
 run("const oldCount=db.services.length;db.services=db.services.filter(s=>s.catalogId!=='quote:mow');servicePriceMigrate(db)");assert.equal(run('db.services.length'),run('oldCount-1'));
-run("const archived=validate(JSON.parse(JSON.stringify(db)))");assert.equal(run('archived.settings.servicePricesVersion'),1);assert.equal(run('archived.services.length'),run('db.services.length'));
+run("const archived=validate(JSON.parse(JSON.stringify(db)))");assert.equal(run('archived.settings.servicePricesVersion'),2);assert.equal(run('archived.services.length'),run('db.services.length'));
 run("db=blank();const original=JSON.stringify(db)");fail=true;assert.equal(run('change(()=>servicePriceMigrate(db))'),false);assert.equal(run('JSON.stringify(db)'),run('original'));fail=false;
 console.log('PASS service prices: one-time complete import, preserving own prices, no quote duplicates, future quote/inspection defaults, immutable saved rows, inactive/deleted services, unknown vs zero, package and architect pricing, validation, archive roundtrip and failed-save rollback.');
+
+run("db=blank();servicePriceMigrate(db);db.settings.servicePricesVersion=1;db.services=db.services.filter(s=>!SERVICE_PRICE_ADDITIONS.includes(s.catalogId)&&s.catalogId!=='quote:mow');db.services.find(s=>s.catalogId==='quote:hedgelow').amount=99;const beforeUpgrade=JSON.stringify(db.documents);servicePriceMigrate(db)");
+assert.equal(run("db.services.filter(s=>SERVICE_PRICE_ADDITIONS.includes(s.catalogId)).length"),7);
+assert.equal(run("db.services.find(s=>s.catalogId==='quote:hedgelow').amount"),99);
+assert(!run("db.services.some(s=>s.catalogId==='quote:mow')"));
+assert.equal(run('JSON.stringify(db.documents)'),run('beforeUpgrade'));
+for(const [id,price] of [['hedgeuproot',16],['smalltreeremove',40],['smallstumpuproot',40],['stumpmachine50',50],['stumpgrind',65],['largetreeremove',null],['largestumpuproot',null]])assert.equal(run(`quoteEditorRows({}).find(s=>s.id==='${id}').price`),price);
+run("const savedRemoval={quoteConfig:{rows:[{id:'hedgeuproot',name:'Изкореняване',unit:'бр.',qty:20,price:16,selected:true}]}};db.services.find(s=>s.catalogId==='quote:hedgeuproot').amount=18;const removalRows=quoteEditorRows({}).map(s=>({...s,selected:s.id==='hedgeuproot',qty:20}));");
+assert.equal(run("quoteEditorRows({}).find(s=>s.id==='hedgeuproot').price"),18);
+assert.equal(run("quoteEditorRows(savedRemoval).find(s=>s.id==='hedgeuproot').price"),16);
+assert.equal(run("validateQuoteConfig({rows:removalRows}).reduce((total,s)=>total+s.qty*s.price,0)"),360);
+run("servicePriceMigrate(db);db.services=db.services.filter(s=>s.catalogId!=='quote:stumpgrind');servicePriceMigrate(db)");assert(!run("db.services.some(s=>s.catalogId==='quote:stumpgrind')"));
+console.log('PASS v1 upgrade adds only 7 removal services, preserves old deletions/custom prices/documents, editable quote rates and totals, no reimport after deletion.');
