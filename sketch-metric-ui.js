@@ -4,7 +4,7 @@ GFSketch.prototype.bindMetrics=function(on){
  this.bindZoneBatch(on);
  q('[data-head-distances]').checked=this.data.showHeadDistances!==false;on(q('[data-head-distances]'),'change',e=>{this.data.showHeadDistances=e.target.checked;this.dirty=true;this.paint()});
  on(q('[data-pipe-diameter]'),'change',e=>this.pipeDiameter=Number(e.target.value));on(q('[data-zone-shape]'),'change',e=>this.zoneShape=e.target.value);on(q('[data-active-zone]'),'change',e=>this.activeZoneId=e.target.value);
- on(q('[data-sheet-width]'),'change',e=>{const w=Number(e.target.value);if(!(w>=5&&w<=1000)){this.message('Ширината на чертежа трябва да е между 5 и 1000 m.');e.target.value=this.data.pixelsPerMeter?1000/this.data.pixelsPerMeter:'';return}if(this.data.items.length&&!confirm('Промяната на общия мащаб променя изчислените метри и площи на всички елементи. Да я приложа ли?')){e.target.value=this.data.pixelsPerMeter?1000/this.data.pixelsPerMeter:'';return}this.data.pixelsPerMeter=1000/w;this.dirty=true;this.properties();this.paint()});
+ on(q('[data-sheet-width]'),'change',e=>{const w=Number(e.target.value);if(!(w>=5&&w<=1000000)){this.message('Ширината на чертежа трябва да е между 5 и 1000000 m.');e.target.value=this.data.pixelsPerMeter?1000/this.data.pixelsPerMeter:'';return}if(this.data.items.length&&!confirm('Промяната на общия мащаб променя изчислените метри и площи на всички елементи. Да я приложа ли?')){e.target.value=this.data.pixelsPerMeter?1000/this.data.pixelsPerMeter:'';return}this.checkpoint();this.data.pixelsPerMeter=1000/w;this.dirty=true;this.properties();this.paint()});
  for(const field of ['length','height','area'])on(q('[data-zone-'+field+']'),'change',e=>{const z=this.data.items[this.selected];if(z?.type!=='zone')return;try{const v=Number(e.target.value);if(!(v>0))throw Error('Въведи положителен размер.');const b=GFSketch.bounds(z),ppm=this.data.pixelsPerMeter||20;let w=(b[2]-b[0])/ppm,h=(b[3]-b[1])/ppm;if(field==='area'){if(z.zoneShape==='square')w=h=Math.sqrt(v);else h=v/w;}else if(field==='length'){w=v;if(z.zoneShape==='square')h=v;}else{h=v;if(z.zoneShape==='square')w=v;}this.resizeZone(z,w,h);}catch(err){this.message(err.message);this.properties()}});
  on(q('[data-zone-name]'),'change',e=>{const z=this.data.items[this.selected];if(z?.type==='zone'){this.checkpoint();z.name=e.target.value.trim()||'Зона';this.refreshZones();this.paint()}});
  for(const [selector,field]of [['data-item-zone','zoneId'],['data-item-diameter','diameter'],['data-valve-thread','thread'],['data-head-nozzle','nozzle'],['data-manual-length','manualLength']])on(q('['+selector+']'),'change',e=>{const item=this.data.items[this.selected];if(!item)return;this.checkpoint();const value=field==='manualLength'?e.target.checked:field==='diameter'?(e.target.value?Number(e.target.value):undefined):e.target.value;if(value===undefined)delete item[field];else item[field]=value;this.properties();this.paint()});
@@ -37,8 +37,9 @@ GFSketch.planZones=function(data,specs){
 };
 GFSketch.prototype.addZoneBatch=function(specs){
  if(this.active||this.busy)throw Error('Завърши текущото действие преди създаване на зони.');
- const zones=GFSketch.planZones(this.data,specs);for(const z of zones)z.id=GFSketch.id();
- GFSketch.validate({...this.data,items:[...this.data.items,...zones]});this.checkpoint();const first=this.data.items.length;this.data.items.push(...zones);this.selected=first;this.activeZoneId=zones[0].id;this.tool='select';
+ const fitted=GFSketch.fitZoneBatch(this.data,specs),zones=fitted.zones;for(const z of zones)z.id=GFSketch.id();
+ GFSketch.validate({...fitted.data,items:[...fitted.data.items,...zones]});this.checkpoint();const first=fitted.data.items.length;this.data=fitted.data;this.data.items.push(...zones);this.selected=first;this.activeZoneId=zones[0].id;this.tool='select';this.zoom=1;this.pan=[0,0];
+ this.root.querySelector('[data-sheet-width]').value=GFIrrMetrics.round(1000/this.data.pixelsPerMeter);
  this.root.querySelectorAll('[data-tool]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tool==='select')));this.root.querySelector('.sketch-text').hidden=true;
  this.refreshZones();this.properties();this.buttons();this.paint();return zones;
 };
@@ -50,5 +51,21 @@ GFSketch.prototype.bindZoneBatch=function(on){
  on(toggle,'change',()=>{panel.hidden=!toggle.checked;});
  const syncCount=()=>{read();const n=Number(count.value);if(!Number.isInteger(n)||n<1||n>64){message.textContent='Въведи цял брой от 1 до 64.';count.value=sizes.length;return;}sizes=Array.from({length:n},(_,i)=>sizes[i]||{length:10,width:8});paint();message.textContent='';};on(count,'change',syncCount);on(count,'input',()=>{const n=Number(count.value);if(Number.isInteger(n)&&n>=1&&n<=64)syncCount();});
  on(rows,'input',e=>{const row=e.target.closest('[data-batch-row]');if(row){const l=Number(row.querySelector('[data-batch-length]').value),w=Number(row.querySelector('[data-batch-width]').value);row.querySelector('[data-batch-area]').textContent=Number.isFinite(l*w)&&l>0&&w>0?GFIrrMetrics.round(l*w)+' m²':'—';}});
- on(q('[data-batch-create]'),'click',()=>{try{if(!toggle.checked)return;if(Number(count.value)!==sizes.length)throw Error('Потвърди броя зони преди създаване.');read();this.addZoneBatch(sizes);message.textContent='Добавени зони: '+sizes.length+'. Избран е „Избор / размер“. Плъзни зоните с писалката; за местене с пръст изключи „Само писалка“. Запази скицата.';}catch(err){message.textContent=err.message;}});paint();
+ on(q('[data-batch-create]'),'click',()=>{try{if(!toggle.checked)return;if(Number(count.value)!==sizes.length)throw Error('Потвърди броя зони преди създаване.');read();this.addZoneBatch(sizes);this.message('Зоните са създадени и мащабът е нагласен. Избор / размер: плъзни с писалката. За пръст изключи „Само писалка“.');panel.hidden=true;toggle.checked=false;message.textContent='Добавени зони: '+sizes.length+'. Избран е „Избор / размер“. Плъзни зоните с писалката; за местене с пръст изключи „Само писалка“. Запази скицата.';}catch(err){message.textContent=err.message;}});paint();
+};
+
+GFSketch.fitZoneBatch=function(data,specs){
+ // Validate dimensions/count separately so a placement error never hides invalid input.
+ if(!Array.isArray(specs)||!specs.length||specs.length>64||data.items.filter(i=>i.type==='zone').length+specs.length>64)throw Error('До 64 поливни зони общо.');
+ for(const s of specs)if(!Number.isFinite(Number(s.length))||!Number.isFinite(Number(s.width))||Number(s.length)<=0||Number(s.width)<=0||Number(s.length)>1000||Number(s.width)>1000)throw Error('Въведи дължина и ширина над 0 и до 1000 m.');
+ if(!data.pixelsPerMeter&&(data.items.length||data.background))throw Error('Старата скица няма потвърден мащаб. Първо задай ширината на чертежа в метри.');
+ const old=data.pixelsPerMeter||20,points=data.items.flatMap(i=>i.points),maxX=Math.max(1,...points.map(p=>p[0])),maxY=Math.max(1,...points.map(p=>p[1]));
+ let upper=Math.min(200,990*old/maxX,740*old/maxY);if(data.background)upper=Math.min(upper,old/(data.backgroundScale||1));
+ let fitted;
+ for(let ppm=upper;ppm>=.001;ppm*=.85){
+  const next=structuredClone(data),ratio=ppm/old;next.pixelsPerMeter=ppm;for(const i of next.items)i.points=i.points.map(p=>p.map(v=>v*ratio));if(next.background)next.backgroundScale=(data.backgroundScale||1)*ratio;
+  // Smallest existing zone must stay representable too.
+  try{GFSketch.validate(next);const zones=GFSketch.planZones(next,specs);GFSketch.validate({...next,items:[...next.items,...zones]});fitted={data:next,zones};break;}catch(err){/* Try a larger physical sheet without changing real dimensions. */}
+ }
+ if(!fitted)throw Error('Размерите са твърде различни или има твърде много елементи за една скица. Намали броя или раздели проекта. Не са добавени зони.');return fitted;
 };
