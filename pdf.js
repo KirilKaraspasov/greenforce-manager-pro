@@ -21,14 +21,14 @@ async function renderDocumentPages(title,text,options={}){
  // Uniform square photos: centered cover crop, four per page, centered final single.
  for(const group of options.photos||[]){
   if(!group.images.length)continue;
-  const cols=2,perPage=4,gap=25,size=(W-2*M-gap)/cols;
+  const cols=group.fullPage?1:2,perPage=group.fullPage?1:4,gap=25,size=group.fullPage?W-2*M:(W-2*M-gap)/cols;
   for(let start=0;start<group.images.length;start+=perPage){
    newPage();heading(group.title+(start?' - продължение':''));
    const count=Math.min(perPage,group.images.length-start);
    for(let slot=0;slot<count;slot++){
     const row=Math.floor(slot/cols),col=slot%cols,rowCount=Math.min(cols,count-row*cols),rowWidth=rowCount*size+(rowCount-1)*gap,x=(W-rowWidth)/2+col*(size+gap),top=230+row*(size+45),img=await loadImage(group.images[start+slot]);
     const crop=Math.min(img.width,img.height),sx=(img.width-crop)/2,sy=(img.height-crop)/2;
-    ctx.drawImage(img,sx,sy,crop,crop,x,top,size,size);
+    if(group.fit==='contain'){const scale=Math.min(size/img.width,size/img.height),w=img.width*scale,h=img.height*scale;ctx.drawImage(img,x+(size-w)/2,top+(size-h)/2,w,h);}else ctx.drawImage(img,sx,sy,crop,crop,x,top,size,size);
     ctx.fillStyle=dark?'#c3d0b8':'#52634c';ctx.font='20px sans-serif';const caption=group.captions?.[start+slot]||'Снимка '+(start+slot+1),captionLines=lines(caption,'20px sans-serif',size);ctx.fillText(captionLines[0]+(captionLines.length>1?'…':''),x,top+size+27);
    }
    flush();
