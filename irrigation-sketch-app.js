@@ -20,7 +20,7 @@ function sketchMaterialRows(system){
   if(data.pixelsPerMeter&&!item.manualLength&&item.type==='drip'){qty=GFIrrMetrics.round(item.points.slice(1).reduce((sum,p,n)=>sum+GFIrrMetrics.dist(item.points[n],p),0)/data.pixelsPerMeter);if(!qty)continue;}
   const baseName=item.material||(item.type==='valveTee'?d[0]:old?.name||d?.[0]);const name=item.type==='line'&&item.diameter?String(baseName).replace(/\s*Ø(?:20|25|32)\b/g,'').trim()+' Ø'+item.diameter:item.type==='valveTee'?baseName+' · '+(item.thread||'уточни резбите'):baseName;
   add({sketchItemId:key,sketchSpecification:JSON.stringify([item.type,item.diameter||'',item.thread||'']),name,group:old?.group||d?.[1]||'Други',unit:['line','drip'].includes(item.type)?'m':item.unit||old?.unit||d?.[2]||'бр.',qty});
-  if(item.type==='head'&&item.nozzle?.trim())add({sketchItemId:key+'-nozzle',name:'Дюза '+item.nozzle.trim(),group:'Разпръсквачи',unit:'бр.',qty:1});
+  if(item.type==='head'&&item.nozzle?.trim()){const product=typeof IRR_SUPPLIER_CATALOG!=='undefined'?IRR_SUPPLIER_CATALOG.find(p=>p.id===item.nozzleCatalogId):null;add({sketchItemId:key+'-nozzle',name:'Дюза '+item.nozzle.trim(),group:'Разпръсквачи',unit:'бр.',qty:1,...(product?{supplierId:product.id,supplierName:product.supplier,sourceURL:product.url,sourceChecked:product.checked,referencePrice:product.price}:{})});}
  }
  const fittings=new Map();for(const fitting of metrics?.fittings||[]){const r=fittings.get(fitting.name)||{sketchItemId:'auto-fitting-'+fitting.name,name:fitting.name,group:'Тръби и фитинги',unit:'бр.',qty:0};r.qty+=fitting.qty;fittings.set(fitting.name,r)}for(const row of fittings.values())add(row);return groupSketchMaterials(rows);
 }
