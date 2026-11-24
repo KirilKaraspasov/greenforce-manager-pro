@@ -1,6 +1,7 @@
 'use strict';
 GFSketch.prototype.bindMetrics=function(on){
  const q=s=>this.root.querySelector(s);
+ this.bindZoneBatch(on);
  q('[data-head-distances]').checked=this.data.showHeadDistances!==false;on(q('[data-head-distances]'),'change',e=>{this.data.showHeadDistances=e.target.checked;this.dirty=true;this.paint()});
  on(q('[data-pipe-diameter]'),'change',e=>this.pipeDiameter=Number(e.target.value));on(q('[data-zone-shape]'),'change',e=>this.zoneShape=e.target.value);on(q('[data-active-zone]'),'change',e=>this.activeZoneId=e.target.value);
  on(q('[data-sheet-width]'),'change',e=>{const w=Number(e.target.value);if(!(w>=5&&w<=1000)){this.message('Ширината на чертежа трябва да е между 5 и 1000 m.');e.target.value=this.data.pixelsPerMeter?1000/this.data.pixelsPerMeter:'';return}if(this.data.items.length&&!confirm('Промяната на общия мащаб променя изчислените метри и площи на всички елементи. Да я приложа ли?')){e.target.value=this.data.pixelsPerMeter?1000/this.data.pixelsPerMeter:'';return}this.data.pixelsPerMeter=1000/w;this.dirty=true;this.properties();this.paint()});
@@ -16,3 +17,38 @@ GFSketch.prototype.metricProperties=function(){const q=s=>this.root.querySelecto
  const select=q('[data-item-zone]');select.replaceChildren(new Option('Без зона',''),...this.data.items.filter(z=>z.type==='zone').map(z=>new Option(z.name||'Зона',z.id)));select.value=i.zoneId||'';q('[data-item-diameter]').value=i.diameter||'';q('[data-item-diameter]').parentElement.hidden=i.type!=='line';q('[data-valve-thread]').value=i.thread||'';q('[data-valve-thread]').parentElement.hidden=i.type!=='valve';q('[data-head-nozzle]').value=i.nozzle||'';q('[data-head-nozzle]').parentElement.hidden=i.type!=='head';const automatic=this.data.pixelsPerMeter&&!i.manualLength&&['line','drip'].includes(i.type);q('[data-qty]').readOnly=!!automatic;if(automatic)q('[data-qty]').value=GFIrrMetrics.round(i.points.slice(1).reduce((sum,p,n)=>sum+GFIrrMetrics.dist(i.points[n],p),0)/this.data.pixelsPerMeter);q('[data-manual-length]').checked=!!i.manualLength;q('[data-manual-length]').parentElement.hidden=!['line','drip'].includes(i.type);
 };
 GFSketch.prototype.showCalculations=function(){const root=this.root.querySelector('[data-calculation-result]');if(!root)return;const s=GFIrrMetrics.analyze(this.data),escape=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));root.innerHTML=`<p>Метри по начертаните трасета и общия мащаб. Площта сама по себе си не определя броя тръби. Няма добавен процент резерв.</p>${s.zones.map(z=>`<article><strong>${escape(z.name)} · ${z.area??'—'} m² · ${z.width??'—'} × ${z.height??'—'} m</strong><p>Тръби в границите: ${Object.entries(z.pipes).map(([d,m])=>'Ø'+escape(d)+' — '+m+' m').join('; ')||'Няма нанесени тръби.'}</p><p>Фитинги: ${z.fittings.map(f=>escape(f.name)+' × '+f.qty).join('; ')||'Няма разпознати възли.'}</p>${z.heads.map((h,n)=>`<p>Разпръсквач ${n+1}: ${h.radius?'интервал '+h.radius+' m; необходим радиус поне '+h.radius+' m':'нужен е поне още един разпръсквач'} · сектор по положение ${h.sector}°. ${h.radius?(h.candidates.length?'Каталожни кандидати: '+h.candidates.map(c=>c.name).join(', '):'Няма подходящ стандартен MP1000/2000/3000 в зададения диапазон; промени подредбата / избери друг модел.') :''}${!h.aligned?' Неподравнени точки — необходима е проверка на покритието.':''}</p>`).join('')}</article>`).join('')}<h4>Общо тръби по диаметър</h4><p>${Object.entries(s.pipeLengths).map(([d,m])=>'Ø'+escape(d)+' — '+m+' m').join(' · ')||'Няма измерени трасета.'}</p><h4>Предложени фитинги</h4>${s.fittings.map(f=>`<p>${escape(f.name)} · ${f.qty} бр.</p>`).join('')||'<p>Няма разпознати свързвания.</p>'}<small>Два прави съосни участъка не изискват автоматично коляно. Кръстосани трасета не са връзка без крайна точка. Преходите са по реално свързаните тръби към клапана, с отделно уточняване на резбата.</small>${s.warnings.map(w=>`<p class="sketch-warning">${escape(w)}</p>`).join('')}<p>Дюзите са предварителни каталожни кандидати. Разстоянието е само геометричен критерий; провери сектора, налягането при дюзата, дебита, вятъра, препятствията и покритието „разпръсквач до разпръсквач“. Тази справка не доказва хидравлична пригодност.</p><a href="https://www.hunterirrigation.com/sites/default/files/CA-Cutsheet-MP-Rotator-EM.pdf" target="_blank" rel="noopener">Hunter — диапазони, сектори и налягане</a>`;};
+
+// Plan an entire batch before modifying the drawing. Keep its existing scale.
+GFSketch.planZones=function(data,specs){
+ if(!Array.isArray(specs)||!specs.length||specs.length>64)throw Error('Въведи между 1 и 64 нови зони.');
+ const existing=data.items.filter(i=>i.type==='zone');if(existing.length+specs.length>64)throw Error('До 64 поливни зони в скицата.');
+ if(data.items.length+specs.length>1000)throw Error('Скицата има твърде много елементи.');
+ const ppm=data.pixelsPerMeter;if(!ppm)throw Error('Първо задай ширината на чертежа в метри, за да има реален мащаб.');
+ const occupied=data.items.filter(i=>['zone','house','box'].includes(i.type)).map(i=>GFSketch.bounds(i));const result=[],gap=10,margin=10;
+ for(const [index,spec]of specs.entries()){
+  const w=Number(spec.length),h=Number(spec.width);if(!Number.isFinite(w)||!Number.isFinite(h)||w<=0||h<=0||w>1000||h>1000)throw Error('Зона '+(index+1)+': въведи дължина и ширина над 0 и до 1000 m.');
+  const pw=w*ppm,ph=h*ppm;if(pw<1||ph<1)throw Error('Зона '+(index+1)+': размерът е твърде малък за този мащаб.');
+  const xs=[margin,...occupied.map(b=>b[2]+gap)].sort((a,b)=>a-b),ys=[margin,...occupied.map(b=>b[3]+gap)].sort((a,b)=>a-b);let place;
+  for(const y of ys){for(const x of xs){if(x+pw>1000-margin||y+ph>750-margin)continue;const b=[x,y,x+pw,y+ph];if(occupied.every(o=>b[2]+gap<=o[0]||b[0]>=o[2]+gap||b[3]+gap<=o[1]||b[1]>=o[3]+gap)){place=b;break;}}if(place)break;}
+  if(!place)throw Error('Няма място за зона '+(index+1)+'. Увеличи „Ширина на чертежа (m)“ или освободи място. Не са добавени зони.');
+  occupied.push(place);result.push({type:'zone',name:'Зона '+(existing.length+index+1),zoneShape:Math.abs(w-h)<1e-9?'square':'rectangle',color:'#518b37',width:2,points:[[place[0],place[1]],[place[2],place[3]]]});
+ }
+ return result;
+};
+GFSketch.prototype.addZoneBatch=function(specs){
+ if(this.active||this.busy)throw Error('Завърши текущото действие преди създаване на зони.');
+ const zones=GFSketch.planZones(this.data,specs);for(const z of zones)z.id=GFSketch.id();
+ GFSketch.validate({...this.data,items:[...this.data.items,...zones]});this.checkpoint();const first=this.data.items.length;this.data.items.push(...zones);this.selected=first;this.activeZoneId=zones[0].id;this.tool='select';
+ this.root.querySelectorAll('[data-tool]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tool==='select')));this.root.querySelector('.sketch-text').hidden=true;
+ this.refreshZones();this.properties();this.buttons();this.paint();return zones;
+};
+GFSketch.prototype.bindZoneBatch=function(on){
+ const q=s=>this.root.querySelector(s),toggle=q('[data-batch-enabled]'),panel=q('[data-batch-panel]'),count=q('[data-batch-count]'),rows=q('[data-batch-rows]'),message=q('[data-batch-message]');
+ if(!toggle)return;let sizes=[{length:10,width:8}];
+ const read=()=>{for(const row of rows.querySelectorAll('[data-batch-row]'))sizes[Number(row.dataset.batchRow)]={length:row.querySelector('[data-batch-length]').value,width:row.querySelector('[data-batch-width]').value};};
+ const paint=()=>{rows.innerHTML=sizes.map((s,i)=>`<div class="sketch-batch-row" data-batch-row="${i}"><strong>Нова зона ${i+1}</strong><label>Дължина · зона ${i+1} (m)<input type="number" min="0.01" max="1000" step="any" data-batch-length value="${s.length}"></label><label>Ширина · зона ${i+1} (m)<input type="number" min="0.01" max="1000" step="any" data-batch-width value="${s.width}"></label><span data-batch-area>${GFIrrMetrics.round(Number(s.length)*Number(s.width))||0} m²</span></div>`).join('');};
+ on(toggle,'change',()=>{panel.hidden=!toggle.checked;});
+ const syncCount=()=>{read();const n=Number(count.value);if(!Number.isInteger(n)||n<1||n>64){message.textContent='Въведи цял брой от 1 до 64.';count.value=sizes.length;return;}sizes=Array.from({length:n},(_,i)=>sizes[i]||{length:10,width:8});paint();message.textContent='';};on(count,'change',syncCount);on(count,'input',()=>{const n=Number(count.value);if(Number.isInteger(n)&&n>=1&&n<=64)syncCount();});
+ on(rows,'input',e=>{const row=e.target.closest('[data-batch-row]');if(row){const l=Number(row.querySelector('[data-batch-length]').value),w=Number(row.querySelector('[data-batch-width]').value);row.querySelector('[data-batch-area]').textContent=Number.isFinite(l*w)&&l>0&&w>0?GFIrrMetrics.round(l*w)+' m²':'—';}});
+ on(q('[data-batch-create]'),'click',()=>{try{if(!toggle.checked)return;if(Number(count.value)!==sizes.length)throw Error('Потвърди броя зони преди създаване.');read();this.addZoneBatch(sizes);message.textContent='Добавени зони: '+sizes.length+'. Избран е „Избор / размер“. Плъзни зоните с писалката; за местене с пръст изключи „Само писалка“. Запази скицата.';}catch(err){message.textContent=err.message;}});paint();
+};
