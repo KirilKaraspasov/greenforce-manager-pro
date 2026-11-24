@@ -1,0 +1,20 @@
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..'),ctx=vm.createContext({structuredClone,console,window:{},document:{addEventListener(){}}});
+for(const f of ['sketch-metrics.js','irrigation-sketch.js','sketch-metric-ui.js','irrigation-sketch-app.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx);
+const S=vm.runInContext('GFSketch',ctx),M=vm.runInContext('GFIrrMetrics',ctx),rows=vm.runInContext('sketchMaterialRows',ctx);
+const item=(type,id,points,rest={})=>({type,id,points,color:'#2188db',width:4,...rest});
+const d={...S.blank(),items:[item('valve','v',[[300,300]]),item('valveTee','t',[[200,300]],{thread:'1" вътрешна'}),item('line','p1',[[100,300],[200,300]],{diameter:25}),item('line','p2',[[200,300],[300,300]],{diameter:25}),item('line','p3',[[200,300],[200,400]],{diameter:25})]};
+const e=Object.create(S.prototype);Object.assign(e,{data:structuredClone(d),selected:0,undoStack:[],redoStack:[],root:{querySelector:()=>({value:'',hidden:false})},properties(){},refreshZones(){},buttons(){},paint(){}});
+e.command('rotate-right');assert.equal(e.data.items[0].rotation,90);assert.deepEqual(e.data.items[0].points,[[300,300]]);e.command('undo');assert.equal(e.data.items[0].rotation,undefined);e.command('redo');assert.equal(e.data.items[0].rotation,90);e.selected=0;e.command('rotate-left');assert.equal(e.data.items[0].rotation,0);e.selected=1;e.command('rotate-left');assert.equal(e.data.items[1].rotation,270);
+S.validate(JSON.parse(JSON.stringify(e.data)));assert.throws(()=>S.validate({...d,items:[{...d.items[0],rotation:NaN}]}));assert.throws(()=>S.validate({...d,items:[{...d.items[0],rotation:360}]}));
+let net=M.analyze(e.data);assert.equal(net.fittings.filter(f=>f.type==='tee').length,0);assert.equal(net.fittings.filter(f=>f.type==='adapter').length,1);assert.equal(net.pipeLengths[25],15);
+let materials=rows({irrigationSketch:e.data});assert.equal(materials.filter(r=>r.name.startsWith('Тройник за клапани')).length,1);assert.equal(materials.find(r=>r.sketchItemId==='t').qty,1);assert(materials.find(r=>r.sketchItemId==='t').name.includes('1" вътрешна'));assert.equal(materials.filter(r=>r.name==='Тройник Ø25').length,0);
+const without={...d,items:d.items.filter(i=>i.type!=='valveTee')};assert.equal(M.analyze(without).fittings.filter(f=>f.type==='tee').length,1);
+assert.equal(JSON.stringify(M.snap(d,[201,301])), '[200,300]');
+const angles=[],mock=new Proxy({rotate:a=>angles.push(a)},{get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
+e.drawItem(mock,e.data.items[0]);e.drawItem(mock,e.data.items[1]);assert.equal(angles[0],0);assert.equal(angles[1],3*Math.PI/2);
+// Exercise the real angle-field handler, including wraparound and invalid entry.
+const controls=new Map(),handlers=new Map();const q=s=>{if(!controls.has(s))controls.set(s,{value:'',checked:false,parentElement:{},replaceChildren(){}});return controls.get(s)};
+e.root={querySelector:q};e.selected=0;e.message=t=>e.lastMessage=t;e.bindMetrics((el,type,fn)=>{if(el===q('[data-rotation]')&&type==='change')handlers.set('angle',fn)});
+handlers.get('angle')({target:{value:'-45'}});assert.equal(e.data.items[0].rotation,315);handlers.get('angle')({target:{value:''}});assert.equal(e.data.items[0].rotation,315);assert(e.lastMessage);
+console.log('PASS valve/tee rotation, angle input, undo/redo, persistence, shared export renderer, tee snap, material quantities and no duplicate automatic tee; existing valve adapters retained');
