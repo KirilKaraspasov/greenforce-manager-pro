@@ -1,0 +1,40 @@
+/* Shared navigation, same theme and existing record editors. */
+.ux-section-nav,.ux-tabs{display:flex;gap:8px;overflow-x:auto;max-width:100%;padding:4px 0 12px;scrollbar-width:thin;margin-bottom:12px}
+.ux-section-nav button,.ux-tabs button{flex:0 0 auto;min-height:46px;padding:10px 14px;border-radius:12px;white-space:nowrap;font-size:14px}
+.ux-section-nav button svg,.ux-tabs button svg{display:none}
+.ux-section-nav button.active,.ux-tabs button.active{background:var(--green);color:var(--gf-action-ink,#172015);border-color:var(--green)}
+.ux-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+.ux-grid button{min-width:0;min-height:52px;white-space:normal;overflow-wrap:anywhere;justify-content:flex-start;text-align:left}
+.ux-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.ux-metrics>div{padding:12px 8px;border:1px solid var(--line);border-radius:12px;min-width:0;background:var(--card,#fff)}
+.ux-metrics small,.ux-metrics strong{display:block;overflow-wrap:anywhere}
+.ux-metrics strong{font-size:clamp(16px,4.4vw,23px);margin-top:4px}
+.ux-metrics small{font-size:13px;color:var(--muted)}
+.ux-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:4px 0 16px}
+.ux-title h2{margin:0;font-size:23px}.ux-title p{margin:4px 0 0;color:var(--muted)}
+.ux-group summary{font-size:17px;cursor:pointer;min-height:44px;display:flex;align-items:center}
+.ux-group .ux-grid{margin-bottom:0}.ux-group small{color:var(--muted)}
+.ux-client-header .row{align-items:flex-start}.ux-client-header h2{margin:0;overflow-wrap:anywhere}
+.ux-client-header p{margin:6px 0}.ux-client-header .grow{min-width:0;overflow-wrap:anywhere}
+.ux-client-header .photo-large{flex-shrink:0}.ux-meta{display:block;font-size:14px;color:var(--muted);margin:6px 0}
+.ux-more-search{margin-bottom:16px}.ux-visit-actions{display:flex;gap:8px;padding:0 0 12px;flex-wrap:wrap}
+.ux-visit-actions button{min-height:44px}.ux-document .actions button{min-height:44px}
+.ux-card-row{border-bottom:1px solid var(--line);padding:12px 0}.ux-card-row:last-child{border-bottom:0}
+.ux-card-row p{margin:6px 0}.ux-card-row h3,.ux-card-row h4{overflow-wrap:anywhere;margin:0}
+.ux-card-row .actions{margin-top:10px}.ux-context-note{font-size:14px;color:var(--muted)}
+.ux-home .card h3{margin-top:0}.ux-home .hero{min-height:0!important;padding:16px!important}
+.ux-home .hero h2{font-size:21px!important;margin:0}.ux-home .hero p{margin:6px 0 0}
+.ux-home .kpis{margin-bottom:12px}.ux-home .kpi{min-width:0}
+.ux-quick{margin-bottom:16px}.ux-client-tabs{margin-top:14px}
+.ux-machine{display:block;width:100%;text-align:left}
+.ux-machine .list-row{pointer-events:none}.ux-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.ux-toolbar .field{flex:1 1 150px}.ux-home .list-row{min-width:0}.ux-home .list-row .grow{min-width:0;overflow-wrap:anywhere}
+@media(max-width:420px){.ux-metrics>div{padding:10px 7px}.ux-grid{gap:8px}.ux-grid button{padding:10px;font-size:14px}.ux-client-header .photo-large{width:48px;height:48px}.ux-metrics strong{font-size:17px}.ux-home .list-row>strong{font-size:14px}}
+@media(min-width:700px){.ux-more .ux-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.ux-quick{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+.ux-machine-photo{display:block;max-width:100%;max-height:220px;object-fit:contain;margin:12px auto;border-radius:12px}
+.ux-home .empty{padding:14px 10px;font-size:14px}
+.ux-home .empty svg{display:none}
+.ux-home .kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ux-metrics .kpi,.ux-home .kpi{min-width:0}
+.ux-metrics .kpi strong{font-size:clamp(16px,3vw,25px)}
