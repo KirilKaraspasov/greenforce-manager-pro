@@ -1,0 +1,13 @@
+'use strict';
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict'),path=require('path'),root=path.resolve(__dirname,'..');
+const nodes={};const ctx=vm.createContext({URL,location:{href:'https://example.test/app/'},localStorage:{getItem:()=>null,setItem(){}},window:{},document:{addEventListener(){},querySelector:s=>nodes[s]||null},structuredClone,crypto:require('crypto').webcrypto,console,setTimeout,clearTimeout});
+for(const n of ['recommendations.js','media.js','document-templates.js','quotes.js','features.js','knowledge.js','flora.js','manager.js','portfolio.js','operations.js','irrigation-planner.js','inspections.js'])vm.runInContext(fs.readFileSync(path.join(root,n),'utf8'),ctx);
+vm.runInContext(fs.readFileSync(path.join(root,'app.js'),'utf8').split('let installPrompt=null')[0],ctx);const run=s=>vm.runInContext(s,ctx);
+run('db=blank();');const home=run('homeView()');assert(home.indexOf('Предстоящи посещения')<home.indexOf('На обекта'));assert(home.indexOf('На обекта')<home.indexOf('Ценоразпис услуги'));assert.equal(home.split('data-page="fieldWork"').length,2);
+let updates=0;ctx.updateQuoteEditor=()=>updates++;
+for(const [id,value] of Object.entries({'quote-mode':'lines','irr-excavation-kind':'0','irr-excavation-qty':'80','irr-excavation-price':'3','field-items':'Тръби и фитинги — PE25 (m) | 100 | 2'}))nodes['#'+id]={value,scrollIntoView(){}};
+nodes['#irr-excavation-feedback']={textContent:''};run('addIrrigationExcavation()');assert.equal(updates,1);assert(nodes['#field-items'].value.includes('Изкопни работи — Изкоп на траншея (линеен m) | 80 | 3'));
+nodes['#irr-excavation-kind'].value='1';nodes['#irr-excavation-price'].value='1.5';run('addIrrigationExcavation()');ctx.items=nodes['#field-items'].value;
+assert.equal(run('docTotal({items,discount:0})'),560);assert.equal(run('irrigationDocumentOrderRows({items}).length'),1);assert.equal(run('irrigationDocumentOrderRows({items})[0].name'),'PE25');
+const before=nodes['#field-items'].value;nodes['#irr-excavation-price'].value='';assert.throws(()=>run('addIrrigationExcavation()'),/цена/);assert.equal(nodes['#field-items'].value,before);nodes['#quote-mode'].value='direct';assert.throws(()=>run('addIrrigationExcavation()'),/Ръчни позиции/);assert.equal(nodes['#field-items'].value,before);
+console.log('PASS home actions below upcoming visits once; excavation appends without replacing materials; correct total 560 EUR; excluded from ordering; blank prices and direct mode leave items intact.');

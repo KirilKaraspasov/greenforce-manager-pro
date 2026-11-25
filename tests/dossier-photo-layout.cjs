@@ -1,0 +1,6 @@
+'use strict';
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict'),path=require('path');
+function canvas(){const ops=[],c={ops,measureText:t=>({width:String(t).length*10}),fillRect(){},fillText(){},drawImage(...a){ops.push(a)},strokeRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){}};return {getContext:()=>c,toDataURL:()=> 'data:image/jpeg;base64,/9j/2Q=='}}
+const ctx=vm.createContext({document:{createElement:canvas},Image:class{set src(s){[this.width,this.height]=s.split('x').map(Number)}async decode(){}},Blob,TextEncoder,atob});vm.runInContext(fs.readFileSync(path.join(__dirname,'../pdf.js'),'utf8'),ctx);
+(async()=>{for(const size of ['900x1600','2000x600','800x800']){ctx.source=size;const pages=await vm.runInContext("renderDocumentPages('Досие','',{photos:[{title:'Фактура',images:[source],fit:'contain',fullPage:true}]})",ctx);const [img,x,y,w,h]=pages.at(-1).getContext().ops[0];assert.equal(pages.at(-1).getContext().ops[0].length,5);assert(Math.abs(w/h-img.width/img.height)<1e-10);assert(Math.abs(x+w/2-620)<1e-8);assert(Math.abs(y+h/2-754)<1e-8);assert(x>=96&&x+w<=1144);assert(y>=230&&y+h<=1278);}
+console.log('PASS portrait/landscape/square invoice pages retain the whole image, original aspect ratio, horizontal and vertical centering, page margins and caption room.');})().catch(e=>{console.error(e);process.exitCode=1});
