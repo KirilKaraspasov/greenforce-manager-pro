@@ -153,7 +153,7 @@ function setupOperations(){
  titles.operations='Работен център';titles.calculations='Калкулации';titles.dataSafety='Кошче и история';titles.fieldWork='На обекта';titles.globalSearch='Търсене';
  views.operations=opsHub;views.calculations=opsCalculationsView;views.dataSafety=opsSafetyView;views.fieldWork=opsFieldView;views.globalSearch=opsSearchView;
  menu.push(['calculations','Калкулации','chart']);
- const home=views.home;views.home=()=>`<div class="card"><div class="actions">${btn('На обекта','go','visit','primary','data-page="fieldWork"')}${btn('Търсене','go','chevron','secondary','data-page="globalSearch"')}${btn('Работен център','go','box','secondary','data-page="operations"')}</div>${db.settings.opsTimer?'<p>Има неприключен таймер към посещение.</p>':''}</div>`+home()+opsAlertHTML();
+ const home=views.home;views.home=()=>home()+opsAlertHTML();
  const settings=views.settings;views.settings=()=>settings()+`<div class="card"><h3>Защита и организация</h3>${btn('Кошче, история и проверка на архив','go','trash','secondary wide','data-page="dataSafety"')}${btn('Свободни дни и капацитет','ops-schedule','calendar','secondary wide')}</div>`;
  const cal=views.calendar;views.calendar=()=>cal()+opsWorkloadView();
  const notification=views.notifications;views.notifications=()=>notification()+opsAlertHTML();
@@ -169,3 +169,5 @@ function setupOperations(){
  document.addEventListener('click',opsClick);document.addEventListener('submit',opsSubmit);document.addEventListener('change',opsChange);document.addEventListener('input',e=>{if(e.target.closest('#ops-calc-form'))opsCalcPreview();if(e.target.id==='ops-search'){state.opsSearch=e.target.value;$('#ops-search-results').innerHTML=opsGlobalResults(e.target.value)}});
  // Form source binding is applied inside the same transaction by managerSubmit.
 }
+
+function opsHomeActions(){return `<div class="card"><div class="actions">${btn('На обекта','go','visit','primary','data-page="fieldWork"')}${btn('Търсене','go','chevron','secondary','data-page="globalSearch"')}${btn('Работен център','go','box','secondary','data-page="operations"')}</div>${db.settings.opsTimer?'<p>Има неприключен таймер към посещение.</p>':''}</div>`;}
