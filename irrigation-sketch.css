@@ -5,3 +5,6 @@
 .sketch-batch{padding:12px;border:1px solid #a9bea0;background:#eef4e9;color:#243522;font-size:14px}.sketch-batch[hidden]{display:none}.sketch-batch-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #c2d1b9}.sketch-batch-row strong{width:100%}.sketch-batch-row input{width:100px;max-width:100%}.sketch-batch>label input{width:85px}.sketch-batch p{margin:10px 0}.sketch-batch button{min-height:44px}
 
 .sketch-properties label[hidden]{display:none}
+
+
+.sketch-side-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;width:100%;flex-basis:100%}.sketch-side-grid label{display:grid;gap:5px;min-width:0}.sketch-side-grid input,.sketch-diagonal input{width:100%;min-width:0;box-sizing:border-box}.sketch-diagonal{display:grid;gap:5px;width:100%}.sketch-batch-row [data-batch-area]{width:100%;font-weight:600}.sketch-properties [data-rotation-fields]{display:flex;flex-wrap:wrap;gap:8px;width:100%}.sketch-properties [data-rotation-fields][hidden]{display:none}
