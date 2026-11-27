@@ -100,6 +100,51 @@ function irrigationDossierBlocks(d){
 }
 async function irrigationDossierPDFOptions(id){const d=irrigationDossierData(id),photos=[];for(const g of irrigationDossierMedia(d)){const images=[];for(const id of g.ids){const data=await MediaStore.get(id);if(!data)throw Error('Липсва снимка от досието. Възстанови я от архив преди издаване на пълно досие.');images.push(data);}photos.push({title:g.title,images,fit:'contain',fullPage:g.kind==='receipt'||g.kind==='note',captions:images.map((_,i)=>g.title+' · '+(i+1))});}
  const company={...db.settings};return {company,cover:{image:'./assets/document-cover.jpeg',title:'Вътрешно досие на поливна система',price:money(d.balance),priceLabel:'Получени приходи минус отчетени разходи',owner:company.owner||company.company,facts:[['Обект',cname(d.system.clientId)],['Система',d.system.name],['Дата',date(today())]]},blocks:irrigationDossierBlocks(d),photos};}
+// Deletion keeps the client ledger intact; system-only history is recoverable in Trash.
+function irrigationDeleteLinks(id,data=db){
+ const d=irrigationDossierData(id,data),groups=[];
+ const add=(table,label,rows,archived=false)=>{if(rows.length)groups.push({table,label,rows,archived});};
+ for(const [table,label] of [['visits','Посещения'],['payments','Плащания'],['expenses','Разходи'],['purchases','Покупки'],['documents','Оферти и договори']])add(table,label,d[table]);
+ add('irrigationLogs','Дневник на системата',d.logs,true);
+ if(typeof GF_WORK_TABLES!=='undefined')for(const table of GF_WORK_TABLES)add(table,typeof GF_RECORD_NAMES!=='undefined'&&GF_RECORD_NAMES[table]||titles[table]||'Работни записи',(data[table]||[]).filter(r=>r.systemId===id),table==='gfIrrStages');
+ return groups;
+}
+function detachAndDeleteIrrigation(id,data=db){
+ if(!data.irrigation.some(s=>s.id===id))throw Error('Системата вече е премахната.');
+ for(const table of ['visits','expenses','purchases','documents'])for(const r of data[table]||[])if(r.irrigationSystemId===id)delete r.irrigationSystemId;
+ if(typeof GF_WORK_TABLES!=='undefined')for(const table of GF_WORK_TABLES){
+  if(table==='gfIrrStages')data[table]=(data[table]||[]).filter(r=>r.systemId!==id);
+  else for(const r of data[table]||[])if(r.systemId===id)delete r.systemId;
+ }
+ data.irrigationLogs=(data.irrigationLogs||[]).filter(r=>r.systemId!==id);
+ data.irrigation=data.irrigation.filter(s=>s.id!==id);
+}
+function irrigationDeleteHTML(id){
+ const r=irrSystem(id);if(!r)throw Error('Системата вече е премахната.');
+ const groups=irrigationDeleteLinks(id);
+ const row=(table,r)=>{
+  const label=[r.date?date(r.date):'',r.service||r.description||r.name||r.title||r.work||r.kind||r.method||r.id,r.number?'№ '+r.number:'',r.amount!=null?money(r.amount):''].filter(Boolean).join(' · ');
+  const tableName=table==='payments'?'visits':table,recordId=table==='payments'?r.visitId:r.id;
+  const action=typeof GF_WORK_TABLES!=='undefined'&&GF_WORK_TABLES.includes(table)?'gf-record':'edit';
+  return `<li><span>${esc(label)}</span> ${btn('Преглед',action,'edit','secondary',`data-table="${esc(tableName)}" data-id="${esc(recordId)}"`)}</li>`;
+ };
+ return `<p><strong>${esc(r.name)}</strong> · ${esc(cname(r.clientId))}</p><p>Ще изтриеш само избраната система. Посещенията, плащанията, разходите, покупките и документите остават към клиента със същите суми и снимки. Премахват се връзките им към тази система.</p>${groups.length?groups.map(g=>`<details class="card" open><summary>${esc(g.label)}: ${g.rows.length}${g.archived?' · запазват се в Кошчето':' · запазват се'}</summary><ul>${g.rows.slice(0,100).map(r=>row(g.table,r)).join('')}</ul>${g.rows.length>100?`<p>Още ${g.rows.length-100} записа. Действието обхваща всички свързани записи.</p>`:''}</details>`).join(''):'<p>Няма свързани записи.</p>'}<p>Системата, снимките само към нея, дневникът и контролните етапи се запазват заедно в Кошчето и могат да се възстановят. Останалите работни записи се запазват към клиента.</p><div id="form-error" class="error" role="alert" hidden></div><div class="actions">${btn('Отказ','close','close','secondary')}<button type="button" id="confirm-irrigation-delete" class="danger">Премахни връзките и изтрий само системата</button></div>`;
+}
+function removeIrrigationSystem(id){
+ try{modal('Изтриване на поливна система',irrigationDeleteHTML(id));}catch(e){return toast(e.message);}
+ const button=$('#confirm-irrigation-delete');
+ button.onclick=()=>{
+  if(button.disabled)return;button.disabled=true;
+  try{
+   const ok=change(()=>detachAndDeleteIrrigation(id));
+   if(!ok){errorForm('Системата не е изтрита. Данните са запазени.');return;}
+   closeDialog();if(state.system===id)state.system='';if(state.gfSystem===id)state.gfSystem='';
+   if(state.page==='irrigationSystem')go('irrigation');else render();
+   toast('Системата е преместена в Кошчето. Финансовата история и документите са запазени.');
+  }catch(e){errorForm(e.message);}finally{button.disabled=false;}
+ };
+}
+
 function setupIrrigationDossier(){
  titles.irrigationSystem='Досие на поливната система';
  for(const table of ['visits','expenses','purchases'])if(!schemas[table].some(f=>f.key==='irrigationSystemId'))schemas[table].push(f('irrigationSystemId','Поливна система (по избор)','irrigationLink',false,null,true));
@@ -117,3 +162,4 @@ function setupIrrigationDossier(){
  }}catch(err){toast(err.message);}});
  document.addEventListener('submit',e=>{const form=e.target;if(form.id!=='irr-dossier-link-form')return;e.preventDefault();try{const fd=new FormData(form);if(change(()=>linkIrrigationDossierRecord(form.dataset.system,String(fd.get('table')),String(fd.get('record'))))){closeDialog();render();toast('Записът е свързан към системата.');}}catch(err){errorForm(err.message);}});
 }
+
